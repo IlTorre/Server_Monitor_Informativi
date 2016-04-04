@@ -33,10 +33,11 @@
             </div>
 
             <div class="header-right">
-
-				<a href="" class="btn btn-danger" title="Logout"><i class="fa fa-exclamation-circle fa-2x"></i></a>
-
+				<a href="{% url 'Monitor:logout' %}" class="btn btn-danger" title="Logout">
+                    <i class="fa fa-exclamation-circle fa-2x"></i>
+                </a>
             </div>
+
         </nav>
         <!-- /. NAV TOP  -->
         <nav class="navbar-default navbar-side" role="navigation">
@@ -44,10 +45,10 @@
                 <ul class="nav" id="main-menu">
                     <li>
                         <div class="user-img-div">
-                            <img src="../media/default/no_profilo.jpg" class="img-thumbnail" />
+                            <img src="{{ utente.foto_profilo }}" class="img-thumbnail" />
 
                             <div class="inner-text">
-                                Jhon Deo Alex
+                                {{ utente.username }}
                             <br />
                                 <small>Last Login : 2 Weeks Ago </small>
                             </div>
@@ -77,13 +78,16 @@
 
         </nav>
 
-
-        {% block body %}
-        {% endblock %}
+        <div id="page-wrapper">
+            {% block body %}
+            {% endblock %}
+        </div>
 
 
     </div>
-
+    <div id="footer-sec">
+        &copy; 2014 YourCompany | Design By : <a href="http://www.binarytheme.com/" target="_blank">BinaryTheme.com</a>
+    </div>
     <!-- SCRIPTS -AT THE BOTOM TO REDUCE THE LOAD TIME-->
     <!-- JQUERY SCRIPTS -->
     <script src="{% static 'Monitor/js/jquery-1.10.2.js' %}"></script>

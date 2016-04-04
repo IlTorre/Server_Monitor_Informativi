@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -33,3 +34,23 @@ def mylogin(request):
             return render(request, 'Monitor/login.html')
         else:
             return HttpResponseRedirect(reverse('Monitor:index'))
+
+
+@login_required(login_url='/login')
+def myindex (request):
+    """
+    Gestisce la visualizzazione della home page
+    """
+
+    return render(request,'Monitor/base.html', {'utente':request.user})
+
+
+@login_required(login_url='/login')
+def mylogout (request):
+    """
+    Permette all'utente che effettua la richiesta di uscire dalla sessione
+    :param request: la richiesta
+    :return: il render alla pagina di login
+    """
+    logout(request)
+    return HttpResponseRedirect(reverse('Monitor:login'))

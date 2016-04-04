@@ -58,13 +58,13 @@
 
 
                     <li>
-                        <a  href=""><i class="fa fa-dashboard "></i>Stato notizie</a>
+                        <a  href="{% url 'Monitor:index' %}"><i class="fa fa-dashboard "></i>Stato notizie</a>
                     </li>
                     <li>
                          <a href="#"><i class="fa fa-desktop "></i>Nuova notizia<span class="fa arrow"></span></a>
                          <ul class="nav nav-second-level">
                             <li>
-                                <a href=""><i class="fa fa-toggle-on"></i>Per monitor</a>
+                                <a href="{% url 'Monitor:inserimento_step1' %}"><i class="fa fa-toggle-on"></i>Per monitor</a>
                             </li>
                             <li>
                                 <a href=""><i class="fa fa-bell "></i>Per flusso tematico</a>

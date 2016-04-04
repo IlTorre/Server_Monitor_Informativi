@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import HttpResponseRedirect
+from django.shortcuts import HttpResponseRedirect, redirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from .forms import *
 
 # Create your views here.
 
@@ -33,7 +34,7 @@ def mylogin(request):
         if request.user.is_anonymous():
             return render(request, 'Monitor/login.html')
         else:
-            return HttpResponseRedirect(reverse('Monitor:index'))
+            return HttpResponseRedirect(reverse('Monitor:index'), {'utente':request.user})
 
 
 @login_required(login_url='/login')
@@ -54,3 +55,50 @@ def mylogout (request):
     """
     logout(request)
     return HttpResponseRedirect(reverse('Monitor:login'))
+
+
+@login_required(login_url='/login')
+def nuova_notizia_1(request):
+    """
+    Gestisce l'inserimento della notizia su tutti i monitor o solo su una parte di essi
+    """
+    if request.method == 'GET':
+        return render(request, 'Monitor/inserimento1.html', {'utente':request.user})
+    else:
+        all_monitor = request.POST['step1']
+        if eval(all_monitor):
+            pass
+        else:
+            return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
+
+
+@login_required(login_url='/login')
+def nuova_notizia_2(request):
+    """
+    Gestisce la selezione dei comuni in cui far comparire la notizia
+    """
+    if request.method == 'GET':
+        form = SceltaComuni()
+        return render(request, 'Monitor/inserimento2.html', {'utente': request.user,'form':form})
+    else:
+        form = SceltaComuni(request.POST)
+        if form.is_valid():
+            comuni_sel = form.cleaned_data.get('comuni_s')
+            comuni=[]
+            for id in comuni_sel:
+                comuni.append(Comune.objects.filter(id=id))
+            return HttpResponseRedirect
+
+@login_required(login_url='/login')
+def nuova_notizia_3(request,comuni_selezionati):
+    """
+        Gestisce l'inserimento della notizia su tutti i monitor di un comune o solo su una parte di essi
+        """
+    if request.method == 'GET':
+        return render(request, 'Monitor/inserimento3.html', {'utente': request.user})
+    else:
+        all_monitor = request.POST['step3']
+        if eval(all_monitor):
+            pass
+        else:
+            return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))

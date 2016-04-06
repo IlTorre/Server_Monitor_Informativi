@@ -33,12 +33,18 @@ class Comune(models.Model):
     """
     nome = models.CharField(max_length=30)
 
+    def __unicode__(self):
+        return self.nome
+
 class Frazione(models.Model):
     """
     Modello che implementa l'entità Frazione di appartenenza di un monitor nel db
     """
     nome = models.CharField(max_length=30)
     comune = models.ForeignKey(Comune)
+
+    def __unicode__(self):
+        return self.nome
 
 class Monitor(models.Model):
     """
@@ -48,6 +54,9 @@ class Monitor(models.Model):
     descrizione = models.CharField(max_length=200)
     via = models.CharField(max_length=30)
     frazione_posizionamento = models.ForeignKey(Frazione)
+
+    def __unicode__(self):
+        return self.nome
 
 def get_nome_immagine_notizia(istanza, file):
     """
@@ -77,6 +86,9 @@ class Notizia(models.Model):
     inserzionista = models.ForeignKey(MyUser)
     data_inserimento = models.DateTimeField(default=timezone.now)
     data_scadenza = models.DateTimeField(default=timezone.now()+datetime.timedelta(days=15))
+
+    def __unicode__(self):
+        return self.titolo
 
     def attiva(self):
         """

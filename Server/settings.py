@@ -119,7 +119,7 @@ MEDIA_URL = '/media/'
 
 # Imposto l'immagine di default del profilo
 
-NO_PROFILO = 'default/no_profilo.jpg'
+NO_PROFILO = os.path.join(MEDIA_URL,'default/no_profilo.jpg')
 
 
 # Imposto il tempo di allarme per mancata connessione dei monitor.

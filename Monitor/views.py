@@ -4,6 +4,7 @@ from django.shortcuts import HttpResponseRedirect, redirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from .forms import *
+from django import forms
 
 # Create your views here.
 
@@ -81,24 +82,61 @@ def nuova_notizia_2(request):
         form = SceltaComuni()
         return render(request, 'Monitor/inserimento2.html', {'utente': request.user,'form':form})
     else:
+            return HttpResponseRedirect(reverse('Monitor:nuova_notzia_da_comune'))
+
+@login_required(login_url='/login')
+def nuova_notizia_3(request):
+    """
+    Gestisce l'inserimento della notizia su tutti i monitor di un comune o solo su una parte di essi
+    """
+    if request.method == 'GET':
+        return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
+    else:
         form = SceltaComuni(request.POST)
         if form.is_valid():
             comuni_sel = form.cleaned_data.get('comuni_s')
-            comuni=[]
+            comuni = []
             for id in comuni_sel:
-                comuni.append(Comune.objects.filter(id=id))
-            return HttpResponseRedirect
+                comuni.append(Comune.objects.filter(id=id).last())
+            request.session['comuni_id']=comuni_sel
+            return render(request, 'Monitor/inserimento3.html', {'utente': request.user, 'comuni_selezionati':comuni})
+        else:
+            print('Errore form non valido')
+
 
 @login_required(login_url='/login')
-def nuova_notizia_3(request,comuni_selezionati):
+def nuova_notizia_4(request):
     """
-        Gestisce l'inserimento della notizia su tutti i monitor di un comune o solo su una parte di essi
-        """
+    Gestisce l'inserimento la selezione delle frazioni
+    """
     if request.method == 'GET':
-        return render(request, 'Monitor/inserimento3.html', {'utente': request.user})
+        return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
     else:
-        all_monitor = request.POST['step3']
-        if eval(all_monitor):
+        all_comuni = request.POST['comuni_all']
+
+        if eval(all_comuni):
             pass
+
         else:
-            return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
+            com=request.session['comuni_id']
+            form = SceltaFrazioni(id_frazioni=com)
+            print(type(form))
+            return render(request, 'Monitor/inserimento4.html', {'utente': request.user, 'form': form})
+
+
+@login_required(login_url='/login')
+def nuova_notizia_5(request):
+    """
+    Gestisce l'inserimento della notizia su tutti i monitor di un comune o solo su una parte di essi
+    """
+    if request.method == 'GET':
+        return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
+    else:
+        form = SceltaComuni(request.POST)
+        if form.is_valid():
+            comuni_sel = form.cleaned_data.get('comuni_s')
+            comuni = []
+            for id in comuni_sel:
+                comuni.append(Comune.objects.filter(id=id).last())
+            request.session['comuni_id']=comuni_sel
+            return render(request, 'Monitor/inserimento3.html', {'utente': request.user, 'comuni_selezionati':comuni})

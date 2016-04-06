@@ -6,24 +6,27 @@
         <div class="row">
             <div class="col-md-12">
                 <h1 class="page-head-line">Inserimento nuova notizia</h1>
-                <h1 class="page-subhead-line">Voglio che la Notizia compaia su tutti i monitor di
-                {% for comune in comuni_selezionati %}
-                    &blank;{{ comune.nome }}
-                {% endfor %}</h1>
+                <h1 class="page-subhead-line">Voglio che la Notizia compaia su tutti i monitor dei comuni di
+                <strong>
+                    {% for comune in comuni_selezionati %}
+                        {{ comune.nome }}
+                    {% endfor %}
+                </strong>
+                </h1>
             </div>
         </div>
             <div class="form-group">
                 <label>Voglio che la Notizia compaia su tutti i monitor che ho selezionato? </label>
-                <form role="form" action="" id="step1_form" method="post">
+                <form role="form" action="{% url 'Monitor:inserimento_step4' %}" id="comuni_all_form" method="post">
                         {% csrf_token %}
                     <div class="radio">
                         <label>
-                            <input type="radio" name="step1" id="optionsRadios1" value="True" checked="">Sì
+                            <input type="radio" name="comuni_all" id="optionsRadios1" value="True" checked="">Sì
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="step1" id="optionsRadios2" value="False">No, Voglio scegliere su quale monitor in particolare
+                            <input type="radio" name="comuni_all" id="optionsRadios2" value="False">No, Voglio scegliere le frazioni
                         </label>
                     </div>
                     <button type="submit" class="btn btn-lg btn-success">Avanti</button>

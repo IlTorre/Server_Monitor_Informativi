@@ -1,0 +1,24 @@
+{% extends 'Monitor/base.html' %}
+
+{% block body %}
+
+    <div id="page-inner">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="page-head-line">Inserimento nuova notizia</h1>
+                <h1 class="page-subhead-line">In quali monitor dell'Unione del Sorbara deve comparire la notizia? </h1>
+            </div>
+        </div>
+            <div class="form-group">
+                <label>Voglio che la Notizia compaia a (scelta multipla consentita):</label>
+                <form role="form" action="{% url 'Monitor:inserimento_step6' %}" id="step6_form" method="post">
+                    {% csrf_token %}
+                    <div class="checkbox">
+                        {{ form.as_p}}
+                    </div>
+                    <button type="submit" class="btn btn-lg btn-success">Avanti</button>
+                </form>
+            </div>
+    </div>
+
+{% endblock %}

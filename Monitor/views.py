@@ -101,7 +101,7 @@ def nuova_notizia_3(request):
             request.session['comuni_id']=comuni_sel
             return render(request, 'Monitor/inserimento3.html', {'utente': request.user, 'comuni_selezionati':comuni})
         else:
-            print('Errore form non valido')
+            print('Errore form non valido 3')
 
 
 @login_required(login_url='/login')
@@ -119,8 +119,7 @@ def nuova_notizia_4(request):
 
         else:
             com=request.session['comuni_id']
-            form = SceltaFrazioni(id_frazioni=com)
-            print(type(form))
+            form = SceltaFrazioni(id_comuni=com)
             return render(request, 'Monitor/inserimento4.html', {'utente': request.user, 'form': form})
 
 
@@ -132,11 +131,34 @@ def nuova_notizia_5(request):
     if request.method == 'GET':
         return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
     else:
-        form = SceltaComuni(request.POST)
+        com = request.session['comuni_id']
+        form = SceltaFrazioni(request.POST,id_comuni=com)
         if form.is_valid():
-            comuni_sel = form.cleaned_data.get('comuni_s')
-            comuni = []
-            for id in comuni_sel:
-                comuni.append(Comune.objects.filter(id=id).last())
-            request.session['comuni_id']=comuni_sel
-            return render(request, 'Monitor/inserimento3.html', {'utente': request.user, 'comuni_selezionati':comuni})
+            frazioni_sel = form.cleaned_data.get('frazioni_s')
+            frazioni = []
+            for id in frazioni_sel:
+                frazioni.append(Frazione.objects.filter(id=id).last())
+            request.session['frazioni_id']=frazioni_sel
+            return render(request, 'Monitor/inserimento5.html', {'utente': request.user, 'frazioni_selezionate':frazioni})
+        else:
+            print("form non valido 5")
+
+
+
+@login_required(login_url='/login')
+def nuova_notizia_6(request):
+    """
+    Gestisce l'inserimento la selezione delle frazioni
+    """
+    if request.method == 'GET':
+        return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
+    else:
+        all_frazioni = request.POST['frazioni_all']
+
+        if eval(all_frazioni):
+            pass
+
+        else:
+            fraz = request.session['frazioni_id']
+            form = SceltaMonitor(id_frazioni=fraz)
+            return render(request, 'Monitor/inserimento6.html', {'utente': request.user, 'form': form})

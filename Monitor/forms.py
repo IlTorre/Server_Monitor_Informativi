@@ -1,5 +1,5 @@
 from django import forms
-from .models import Comune, Frazione
+from .models import Comune, Frazione, Monitor
 
 def ottieni_comuni():
     comuni=Comune.objects.all()
@@ -19,9 +19,9 @@ class SceltaComuni(forms.Form):
         label='',
     )
 
-def ottieni_frazioni(id_frazioni):
+def ottieni_frazioni(id_comuni):
     comuni = []
-    for x in id_frazioni:
+    for x in id_comuni:
         y = Comune.objects.filter(id=x).last()
         comuni.append(y)
     frazioni = []
@@ -37,7 +37,7 @@ def ottieni_frazioni(id_frazioni):
 
 class SceltaFrazioni (forms.Form):
     """
-
+    Gestisce la creazione del form per la scelta delle frazioni
     """
     frazioni_s = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
@@ -45,12 +45,41 @@ class SceltaFrazioni (forms.Form):
         )
 
     def __init__(self, *args, **kwargs):
-        id_frazioni = kwargs.pop('id_frazioni')
-        print(id_frazioni)
+        id_comuni = kwargs.pop('id_comuni', None)
         super(SceltaFrazioni, self).__init__(*args, **kwargs)
-        self.fields['frazioni_s'].choices = ottieni_frazioni(id_frazioni)
+        if id_comuni:
+            self.fields['frazioni_s'].choices = ottieni_frazioni(id_comuni)
 
 
+def ottieni_monitor(id_frazioni):
+    frazioni = []
+    for x in id_frazioni:
+        y = Frazione.objects.filter(id=x).last()
+        frazioni.append(y)
+    monitor = []
+    for frazione in frazioni:
+        y = Monitor.objects.filter(frazione_posizionamento=frazione)
+        monitor += y
+    choices = []
 
+    for m in monitor:
+        choices.append((m.id, m.nome))
+    return choices
+
+
+class SceltaMonitor (forms.Form):
+    """
+    Gestisce la creazione del form per la scelta dei monitor
+    """
+    monitor_s = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple,
+        label='',
+        )
+
+    def __init__(self, *args, **kwargs):
+        id_frazioni = kwargs.pop('id_frazioni',None)
+        super(SceltaMonitor, self).__init__(*args, **kwargs)
+        if id_frazioni:
+            self.fields['monitor_s'].choices = ottieni_monitor(id_frazioni)
 
 

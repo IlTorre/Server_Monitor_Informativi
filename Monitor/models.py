@@ -36,6 +36,10 @@ class Comune(models.Model):
     def __unicode__(self):
         return self.nome
 
+    def __str__(self):
+        return self.nome
+
+
 class Frazione(models.Model):
     """
     Modello che implementa l'entità Frazione di appartenenza di un monitor nel db
@@ -45,6 +49,10 @@ class Frazione(models.Model):
 
     def __unicode__(self):
         return self.nome
+
+    def __str__(self):
+        return self.nome
+
 
 class Monitor(models.Model):
     """
@@ -56,7 +64,11 @@ class Monitor(models.Model):
     frazione_posizionamento = models.ForeignKey(Frazione)
 
     def __unicode__(self):
-        return self.nome
+        return self.nome + " - " + self.frazione_posizionamento.nome
+
+    def __str__(self):
+        return self.nome + " - " + self.frazione_posizionamento.nome
+
 
 def get_nome_immagine_notizia(istanza, file):
     """

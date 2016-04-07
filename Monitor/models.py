@@ -1,8 +1,10 @@
 from django.db import models
-import os,datetime
+import os
+import datetime
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+
 
 def get_nome_immagine_utente(istanza, file):
     """
@@ -21,11 +23,13 @@ def get_nome_immagine_utente(istanza, file):
                         os.path.splitext(file)[1]
                         )
 
+
 class MyUser(AbstractUser):
     """
     Classe che estende la classe user di django per aggiungere campi personalizzati
     """
-    foto_profilo = models.ImageField(upload_to=get_nome_immagine_utente,default=settings.NO_PROFILO)
+    foto_profilo = models.ImageField(upload_to=get_nome_immagine_utente, default=settings.NO_PROFILO)
+
 
 class Comune(models.Model):
     """
@@ -87,13 +91,14 @@ def get_nome_immagine_notizia(istanza, file):
                         os.path.splitext(file)[1]
                         )
 
+
 class Notizia(models.Model):
     """
     Entità che implementa l'entità notizia nel db
     """
     titolo = models.CharField(max_length=30)
     descrizione = models.CharField(max_length=400)
-    immagine = models.ImageField(upload_to=get_nome_immagine_notizia,default=None)
+    immagine = models.ImageField(upload_to=get_nome_immagine_notizia, default=None)
     approvata = models.BooleanField(default=False)
     inserzionista = models.ForeignKey(MyUser)
     data_inserimento = models.DateTimeField(default=timezone.now)
@@ -106,30 +111,34 @@ class Notizia(models.Model):
         """
         Ritorna se la notizia è attiva e visualizzabile su un monitor
         """
-        return self.approvata and (self.data_scadenza>=timezone.now())
+        return self.approvata and (self.data_scadenza >= timezone.now())
 
-class Vis_in_Comune(models.Model):
+
+class VisualizzataComune(models.Model):
     """
     Contiene le notizie che si è deciso di visualizzare su tutto il comune
     """
     notizia = models.ForeignKey(Notizia)
     comune = models.ForeignKey(Comune)
 
-class Vis_in_Frazione(models.Model):
+
+class VisualizzataFrazione(models.Model):
     """
     Contiene le notizie che si è deciso di visualizzare su una frazione
     """
     notizia = models.ForeignKey(Notizia)
     comune = models.ForeignKey(Frazione)
 
-class Vis_in_Monitor(models.Model):
+
+class VisualizzataMonitor(models.Model):
     """
     Contiene le notizie che si è deciso di visualizzare su un monitor in particolare
     """
     notizia = models.ForeignKey(Notizia)
     comune = models.ForeignKey(Monitor)
 
-class Ultimo_agg(models.Model):
+
+class UltimoAggiornamento(models.Model):
     """
     Classe che salva l'ultimo aggiornamento che è stato effettuato alle notizie di un determinato monitor
     Si tratta di un dato derivato che però riduce il carico del server al momento dell'aggiornamento dei monitor
@@ -137,7 +146,8 @@ class Ultimo_agg(models.Model):
     monitor = models.ForeignKey(Monitor).unique
     agg = models.DateTimeField(default=timezone.now)
 
-class Monitor_ultima_connessione(models.Model):
+
+class MonitorUltimaConnessione(models.Model):
     """
     Classe che tiene traccia dell'ultima connessione effettuata dal monitor.
     Serve per identificare qualche problema alle pensiline
@@ -149,4 +159,4 @@ class Monitor_ultima_connessione(models.Model):
         """
         Ritorna lo stato di funzionamento del monitor
         """
-        return self.agg>=timezone.now()-datetime.timedelta(hours=settings.TEMPO_ALLERTA)
+        return self.agg >= timezone.now()-datetime.timedelta(hours=settings.TEMPO_ALLERTA)

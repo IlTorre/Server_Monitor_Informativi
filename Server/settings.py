@@ -56,8 +56,7 @@ ROOT_URLCONF = 'Server.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -126,7 +125,7 @@ MEDIA_URL = '/media/'
 
 # Imposto l'immagine di default del profilo
 
-NO_PROFILO = os.path.join(MEDIA_URL,'default/no_profilo.jpg')
+NO_PROFILO = os.path.join(MEDIA_URL, 'default/no_profilo.jpg')
 
 
 # Imposto il tempo di allarme per mancata connessione dei monitor.

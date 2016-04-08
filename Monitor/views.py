@@ -187,6 +187,18 @@ def nuova_notizia_7(request):
             print("form non valido 7")
 
 
+def trasforma_data_ora(data, ora):
+    a, m, g = str(data).split('-')
+    a = int(a)
+    m = int(m)
+    g = int(g)
+    data = datetime.date(a, m, g)
+    hh, mm = str(ora).split(':')
+    ora = datetime.time(hh, mm)
+    data_c = datetime.datetime.combine(data, ora)
+    return data_c
+
+
 @login_required(login_url='/login')
 def finalizza_notizia(request):
     """
@@ -227,20 +239,12 @@ def finalizza_notizia(request):
                 notizia = immagine.save(commit=False)
                 notizia.titolo = request.POST['titolo']
                 notizia.descrizione = request.POST['descrizione']
-
                 data_s = request.POST['data_scadenza']
                 if data_s != '':
-                    a, m, g = str(data_s).split('-')
-                    a = int(a)
-                    m = int(m)
-                    g = int(g)
-                    data_s = datetime.date(a, m, g)
-                    ora_s = datetime.time(23, 59)
-                    data = datetime.datetime.combine(data_s, ora_s)
-                    notizia.data_scadenza = data
-
+                    notizia.data_scadenza = trasforma_data_ora(data_s, '23:59')
                 notizia.inserzionista = request.user
                 notizia.save()
+                
                 comuni = Comune.objects.all()
                 for comune in comuni:
                     VisualizzataComune(comune=comune, notizia=notizia).save()
@@ -248,4 +252,3 @@ def finalizza_notizia(request):
 
         else:
             print("errore form finalizza")
-

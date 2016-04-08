@@ -48,9 +48,9 @@
                             <img src="{{ request.user.foto_profilo.url }}" class="img-thumbnail" />
 
                             <div class="inner-text">
-                                {{ request.user.username }}
+                                {{ request.user.first_name }} {{ request.user.last_name }}
                             <br />
-                                <small>Last Login : 2 Weeks Ago </small>
+                                <small>Username: {{ request.user.username }} </small>
                             </div>
                         </div>
 

@@ -4,6 +4,8 @@ from django.shortcuts import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from .forms import *
+import datetime
+from .models import VisualizzataComune, VisualizzataFrazione, VisualizzataMonitor
 
 # Create your views here.
 
@@ -68,7 +70,8 @@ def nuova_notizia_1(request):
     else:
         all_monitor = request.POST['step1']
         if eval(all_monitor):
-            return render(request, 'Monitor/inserimento_notizia.html')
+            immagine = CaricaFotoNotizia()
+            return render(request, 'Monitor/inserimento_notizia.html', {'immagine': immagine})
         else:
             return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
 
@@ -192,31 +195,57 @@ def finalizza_notizia(request):
     if request.method == 'GET':
         return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
     else:
-        try:
-            comuni_id = request.session['comuni_id']
+        immagine = CaricaFotoNotizia(request.POST, request.FILES)
+        if immagine.is_valid():
             try:
-                frazioni_id = request.session['frazioni_id']
+                comuni_id = request.session['comuni_id']
                 try:
-                    monitor_id = request.session['monitor_id']
-                    """
-                    Inserimento notizia per monitor
-                    """
-                    pass
+                    frazioni_id = request.session['frazioni_id']
+                    try:
+                        monitor_id = request.session['monitor_id']
+                        """
+                        Inserimento notizia per monitor
+                        """
+                        pass
+
+                    except KeyError:
+                        """
+                        Inserimento per frazioni
+                        """
+                        pass
 
                 except KeyError:
                     """
-                    Inserimento per frazioni
+                    Inserimento notizia per comune
                     """
                     pass
 
             except KeyError:
                 """
-                Inserimento notizia per comune
+                Inserimento notizia su tutti i monitor disponibili
                 """
-                pass
+                notizia = immagine.save(commit=False)
+                notizia.titolo = request.POST['titolo']
+                notizia.descrizione = request.POST['descrizione']
 
-        except KeyError:
-            """
-            Inserimento notizia su tutti i monitor disponibili
-            """
-            pass
+                data_s = request.POST['data_scadenza']
+                if data_s != '':
+                    a, m, g = str(data_s).split('-')
+                    a = int(a)
+                    m = int(m)
+                    g = int(g)
+                    data_s = datetime.date(a, m, g)
+                    ora_s = datetime.time(23, 59)
+                    data = datetime.datetime.combine(data_s, ora_s)
+                    notizia.data_scadenza = data
+
+                notizia.inserzionista = request.user
+                notizia.save()
+                comuni = Comune.objects.all()
+                for comune in comuni:
+                    VisualizzataComune(comune=comune, notizia=notizia).save()
+                return HttpResponseRedirect(reverse('Monitor:index'))
+
+        else:
+            print("errore form finalizza")
+

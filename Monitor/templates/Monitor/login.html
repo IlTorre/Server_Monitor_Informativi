@@ -31,7 +31,9 @@
                         <br />
 
                         {% if messaggio %}
-                            <label class="control-label" for="error">{{ messaggio }}</label>
+                            <div class="alert alert-danger" role="alert">
+                            {{ messaggio }}
+                            </div>
                         {% endif %}
 
                         <div class="form-group input-group">

@@ -92,9 +92,11 @@ class CaricaFotoNotizia (forms.ModelForm):
     """
     Classe che implementa il form di caricamento della foto delle notizie
     """
+    immagine = forms.ImageField(required=False)
+
     class Meta:
         """
         Classe delle metainformazioni che specifica il modello da utilizzare e i campi.
         """
         model = Notizia
-        fields = ['foto']
+        fields = ['immagine']

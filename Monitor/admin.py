@@ -1,7 +1,15 @@
 from django.contrib import admin
-from .models import Comune, Frazione, Monitor
+from .models import Comune, Frazione, Monitor, MyUser,VisualizzataComune
 
 # Register your models here.
+
+
+class TuttiUtenti(admin.ModelAdmin):
+    """
+    Classe che definisce la visualizzazione degli utenti nel lato amministrativo
+    """
+    list_display = ('username', 'first_name', 'last_name')
+    ordering = ['last_name', 'first_name']
 
 
 class TuttiComuni(admin.ModelAdmin):
@@ -27,6 +35,16 @@ class TuttiMonitor(admin.ModelAdmin):
     list_display = ('nome', 'descrizione', 'via', 'frazione_posizionamento')
     ordering = ['frazione_posizionamento', 'via', 'nome']
 
+
+class VisualizzatiTuttiMonitor(admin.ModelAdmin):
+    """
+    Classe che definisce la visualizzazione dei monitor nel lato amministrativo
+    """
+    list_display = ('comune', 'notizia')
+    ordering = ['comune']
+
+admin.site.register(MyUser, TuttiUtenti)
 admin.site.register(Comune, TuttiComuni)
 admin.site.register(Frazione, TutteFrazioni)
 admin.site.register(Monitor, TuttiMonitor)
+admin.site.register(VisualizzataComune, VisualizzatiTuttiMonitor)

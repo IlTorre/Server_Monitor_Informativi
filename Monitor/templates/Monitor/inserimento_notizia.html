@@ -3,66 +3,69 @@
 {% block body %}
 
     <div id="page-inner">
-        <div class="row">
-            <div class="col-md-12">
-                <h1 class="page-head-line">Inserimento nuova notizia</h1>
-                <h1 class="page-subhead-line">Informazioni sulla notizia</h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Caricamento immagine
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <div class="">
-                                <div class="fileupload fileupload-new" data-provides="fileupload">
-                                    <span class="btn btn-file btn-default">
-                                        <span class="fileupload-new">Scegli il file</span>
-                                        <input type="file">
-                                    </span>
-                                    <span class="fileupload-preview"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-lg-4">Imagine Caricata</label>
-                            <div class="">
-                                <div class="fileupload fileupload-new" data-provides="fileupload">
-                                    <div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;"></div>
-                                </div>
-                            </div>
-                        </div>
-					</div>
+        <form role="form" action="{% url 'Monitor:finalizza_notizia' %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 class="page-head-line">Inserimento nuova notizia</h1>
+                    <h1 class="page-subhead-line">Informazioni sulla notizia</h1>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Informazioni testuali
-                    </div>
-                    <div class="panel-body">
-                        <form role="form">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            Informazioni testuali
+                        </div>
+                        <div class="panel-body">
                             <div class="form-group">
                                 <label>Titolo</label>
-                                <input class="form-control" type="text">
+                                <input class="form-control" type="text" name="titolo">
                             </div>
                             <div class="form-group">
                                 <label>Descrizione</label>
-                                <textarea class="form-control" rows="5"></textarea>
+                                <textarea class="form-control" rows="5" name="descrizione"></textarea>
                             </div>
-
-                        </form>
+                            <div class="form-group">
+                                <label>Data scadenza <span class="label label-warning"><strong>ATTENZIONE:</strong> Dopo questa data la notizia non sarà più visualizzata</span></label>
+                                <input class="form-control" type="date" id="theDate" name="data_scadenza">
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Caricamento immagine
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <div class="">
+                                    <div class="fileupload fileupload-new" data-provides="fileupload">
+                                        <span class="btn btn-file btn-default">
+                                            {{ immagine.as_p }}
+                                        </span>
+                                        <span class="fileupload-preview"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-lg-4">Imagine Caricata</label>
+                                <div class="">
+                                    <div class="fileupload fileupload-new" data-provides="fileupload">
+                                        <div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        </div>
-        <div class="col-md-6">
-            <button type="button" class="btn btn-lg btn-success">Fine</button>
-        </div>
+            </div>
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-lg btn-success" >Fine</button>
+            </div>
+        </form>
     </div>
 
 {% endblock %}

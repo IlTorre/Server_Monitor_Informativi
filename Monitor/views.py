@@ -234,7 +234,7 @@ def finalizza_notizia(request):
 
             except KeyError:
                 """
-                Inserimento notizia su tutti i monitor disponibili
+                Inserimento notizia su tutti i monitor disponibili: in tutti i comuni
                 """
                 notizia = immagine.save(commit=False)
                 notizia.titolo = request.POST['titolo']
@@ -244,7 +244,7 @@ def finalizza_notizia(request):
                     notizia.data_scadenza = trasforma_data_ora(data_s, '23:59')
                 notizia.inserzionista = request.user
                 notizia.save()
-                
+
                 comuni = Comune.objects.all()
                 for comune in comuni:
                     VisualizzataComune(comune=comune, notizia=notizia).save()

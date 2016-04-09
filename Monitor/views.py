@@ -209,6 +209,14 @@ def finalizza_notizia(request):
     else:
         immagine = CaricaFotoNotizia(request.POST, request.FILES)
         if immagine.is_valid():
+            notizia = immagine.save(commit=False)
+            notizia.titolo = request.POST['titolo']
+            notizia.descrizione = request.POST['descrizione']
+            data_s = request.POST['data_scadenza']
+            if data_s != '':
+                notizia.data_scadenza = trasforma_data_ora(data_s, '23:59')
+            notizia.inserzionista = request.user
+            notizia.save()
             try:
                 comuni_id = request.session['comuni_id']
                 try:
@@ -218,37 +226,40 @@ def finalizza_notizia(request):
                         """
                         Inserimento notizia per monitor
                         """
-                        pass
+                        monitor = []
+                        for m_id in monitor_id:
+                            monitor.append(Monitor.objects.filter(id=m_id).last())
+                        for x in monitor:
+                            VisualizzataMonitor(monitor=x, notizia=notizia).save()
 
                     except KeyError:
                         """
                         Inserimento per frazioni
                         """
-                        pass
+                        frazioni = []
+                        for id_frazione in frazioni_id:
+                            frazioni.append(Frazione.objects.filter(id=id_frazione).last())
+                        for frazione in frazioni:
+                            VisualizzataFrazione(frazione=frazione, notizia=notizia).save()
 
                 except KeyError:
                     """
                     Inserimento notizia per comune
                     """
-                    pass
+                    comuni = []
+                    for id_comune in comuni_id:
+                        comuni.append(Comune.objects.filter(id=id_comune).last())
+                    for comune in comuni:
+                        VisualizzataComune(comune=comune, notizia=notizia).save()
 
             except KeyError:
                 """
                 Inserimento notizia su tutti i monitor disponibili: in tutti i comuni
                 """
-                notizia = immagine.save(commit=False)
-                notizia.titolo = request.POST['titolo']
-                notizia.descrizione = request.POST['descrizione']
-                data_s = request.POST['data_scadenza']
-                if data_s != '':
-                    notizia.data_scadenza = trasforma_data_ora(data_s, '23:59')
-                notizia.inserzionista = request.user
-                notizia.save()
-
                 comuni = Comune.objects.all()
                 for comune in comuni:
                     VisualizzataComune(comune=comune, notizia=notizia).save()
-                return HttpResponseRedirect(reverse('Monitor:index'))
 
+            return HttpResponseRedirect(reverse('Monitor:index'))
         else:
             print("errore form finalizza")

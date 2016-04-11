@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import *
 import datetime
 from .models import VisualizzataComune, VisualizzataFrazione, VisualizzataMonitor
+from Server.settings import TEMPO_ALLERTA
 
 # Create your views here.
 
@@ -28,7 +29,7 @@ def mylogin(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect(reverse('Monitor:index'))
+                return HttpResponseRedirect(reverse(myindex))
             else:
                 return render(request, 'Monitor/login.html', {'messaggio': 'Account inattivo!'})
         else:
@@ -41,12 +42,25 @@ def mylogin(request):
 
 
 @login_required(login_url='/login')
-def myindex(request):
+def myindex(request, ok=None, errore=None):
     """
     Gestisce la visualizzazione della home page
     """
+    monitor = Monitor.objects.all()
+    nmonitor = 0
+    for x in monitor:
+        if not x.funziona():
+            nmonitor += 1
+    notizie = Notizia.objects.all()
+    nnotizie = 0
+    for notizia in notizie:
+        if not notizia.approvata:
+            nnotizie += 1
 
-    return render(request, 'Monitor/base.html')
+    return render(request, 'Monitor/index.html', {'monitor_in_errore': nmonitor,
+                                                  'notizie_non_approvate': nnotizie,
+                                                  'ok': ok,
+                                                  'errore': errore})
 
 
 @login_required(login_url='/login')
@@ -106,7 +120,10 @@ def nuova_notizia_3(request):
             request.session['comuni_id'] = comuni_sel
             return render(request, 'Monitor/inserimento3.html', {'comuni_selezionati': comuni})
         else:
-            print('Errore form non valido 3')
+            return myindex(
+                request,
+                errore="Si è verificato un errore con il form SceltaComuni. Riprova!\nCod Errore: nuova_notizia_3"
+            )
 
 
 @login_required(login_url='/login')
@@ -147,7 +164,10 @@ def nuova_notizia_5(request):
             request.session['frazioni_id'] = frazioni_sel
             return render(request, 'Monitor/inserimento5.html', {'frazioni_selezionate': frazioni})
         else:
-            print("form non valido 5")
+            return myindex(
+                request,
+                errore="Si è verificato un errore con il form SceltaFrazioni. Riprova!\nCod Errore: nuova_notizia_5"
+            )
 
 
 @login_required(login_url='/login')
@@ -184,7 +204,10 @@ def nuova_notizia_7(request):
             request.session['monitor_id'] = monitor_sel
             return render(request, 'Monitor/inserimento_notizia.html')
         else:
-            print("form non valido 7")
+            return myindex(
+                request,
+                errore="Si è verificato un errore con il form SceltaMonitor. Riprova!\nCod Errore: nuova_notizia_7"
+            )
 
 
 def trasforma_data_ora(data, ora):
@@ -262,4 +285,29 @@ def finalizza_notizia(request):
 
             return HttpResponseRedirect(reverse('Monitor:index'))
         else:
-            print("errore form finalizza")
+            return myindex(
+                request,
+                errore="Si è verificato un errore con il form CaricaFotoNotizia. Riprova\nCod Errore: finalizza_notizia"
+            )
+
+
+@login_required(login_url='/login')
+def monitor_in_errore(request):
+    """
+    Gestisce il recuero e la visualizzazione dei monitor che sono in errore
+    """
+    monitor = Monitor.objects.all()
+    in_errore = []
+    for x in monitor:
+        if not x.funziona():
+            in_errore.append(x)
+    return render(request, 'Monitor/monitor_errore.html', {'tempo':TEMPO_ALLERTA, 'monitor': in_errore})
+
+
+@login_required(login_url='/login')
+def notizie_da_approvare(request):
+    """
+
+    """
+    notizie = Notizia.objects.filter(approvata=False)
+    return render(request, 'Monitor/notizie_da_approvare.html', {'notizie': notizie})

@@ -1,0 +1,60 @@
+{% extends 'Monitor/base.html' %}
+
+{% block body %}
+
+             <div id="page-inner">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="page-head-line">Scrivania</h1>
+                        <h1 class="page-subhead-line">Controlla lo stato delle notizie </h1>
+
+                    </div>
+                </div>
+                <!-- /. ROW  -->
+                <div class="row">
+                    {% if errore %}
+                        <div class="panel">
+                            <div class="alert alert-danger" role="alert">
+                                {{ errore }}
+                            </div>
+                        </div>
+                    {% elif ok %}
+                        <div class="panel">
+                            <div class="alert alert-success" role="alert">
+                                {{ ok }}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="col-md-6">
+                        {% if monitor_in_errore == 0 %}
+                            <div class="main-box mb-dull">
+                        {% else %}
+                            <div class="main-box mb-red">
+                        {% endif %}
+                                <a href="{% url 'Monitor:stato_monitor' %}">
+                                    <i class="fa fa-bolt fa-5x"></i>
+                                    <h5>
+                                        {{ monitor_in_errore }} Problemi con i Monitor
+                                    </h5>
+                                </a>
+                            </div>
+                    </div>
+                    <div class="col-md-6">
+                        {% if notizie_non_approvate == 0 %}
+                            <div class="main-box mb-dull">
+                        {% else %}
+                            <div class="main-box mb-red">
+                        {% endif %}
+                                <a href="{% url 'Monitor:notizie_da_approvare' %}">
+                                    <i class="fa fa-warning fa-5x"></i>
+                                    <h5>
+                                        {{ notizie_non_approvate }} Notizie da approvare
+                                    </h5>
+                                </a>
+                            </div>
+                    </div>
+                </div>
+                <!-- /. ROW  -->
+             </div>
+
+{% endblock %}

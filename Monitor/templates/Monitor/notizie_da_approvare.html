@@ -1,0 +1,46 @@
+{% extends 'Monitor/base.html' %}
+
+{% block body %}
+
+    <div id="page-inner">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="page-head-line">Notizie non ancora approvate</h1>
+                <h1 class="page-subhead-line">Le seguenti notizie non sono ancora state approvate.</h1>
+            </div>
+        </div>
+
+        {% if notizie|length == 0 %}
+            <div class="panel">
+                <div class="alert alert-success" role="alert">
+                    Nessuna notizia da approvare! Tutte le notizie publicate sono visualizzate sui Monitor
+                </div>
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>#id</th>
+                            <th>Titolo</th>
+                            <th>Inserzionista</th>
+                            <th>Data di inserimento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for notizia in notizie %}
+                            <tr>
+                                <td># {{ notizia.id }}</td>
+                                <td>{{ notizia.titolo }}</td>
+                                <td>{{ notizia.inserzionista }}</td>
+                                <td>{{ notizia.data_inserimento }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+    </div>
+
+{% endblock %}

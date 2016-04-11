@@ -73,6 +73,13 @@ class Monitor(models.Model):
     def __str__(self):
         return self.nome + " - " + self.frazione_posizionamento.nome
 
+    def funziona(self):
+        try:
+            funziona = MonitorUltimaConnessione.objects.filter(id=self.id).last().funziona()
+        except AttributeError:
+            return False
+        return funziona
+
 
 def get_nome_immagine_notizia(istanza, file):
     """
@@ -98,7 +105,7 @@ class Notizia(models.Model):
     """
     titolo = models.CharField(max_length=30)
     descrizione = models.CharField(max_length=400)
-    immagine = models.ImageField(upload_to=get_nome_immagine_notizia, default=None)
+    immagine = models.ImageField(upload_to=get_nome_immagine_notizia, default=None, null=True, blank=True)
     approvata = models.BooleanField(default=False)
     inserzionista = models.ForeignKey(MyUser)
     data_inserimento = models.DateTimeField(default=timezone.now)

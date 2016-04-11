@@ -12,4 +12,6 @@ urlpatterns = [
     url(r'^inserisci/AllFrazioni', views.nuova_notizia_5, name='inserimento_step5'),
     url(r'^inserisci/monitor', views.nuova_notizia_6, name='inserimento_step6'),
     url(r'^inserisci/notizia', views.finalizza_notizia, name='finalizza_notizia'),
+    url(r'^statoMonitor', views.monitor_in_errore, name='stato_monitor'),
+    url(r'^NotizieDaApprovare', views.notizie_da_approvare, name='notizie_da_approvare'),
 ]

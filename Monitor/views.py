@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -211,6 +211,12 @@ def nuova_notizia_7(request):
 
 
 def trasforma_data_ora(data, ora):
+    """
+    Trasforma una data e un ora in un datetime necessario alla memorizzazione nel db
+    :param data: una data espressa nel formato yyyy-mm-gg
+    :param ora: un orario espresso nel formato hh:mm
+    :return
+    """
     a, m, g = str(data).split('-')
     a = int(a)
     m = int(m)
@@ -315,13 +321,20 @@ def notizie_da_approvare(request):
 
 @login_required(login_url='/login')
 def approva_notizia(request, id_notizia):
-    notizia = Notizia.objects.filter(id=id_notizia).last()
-    if request.method == 'GET':
-        return render(request,'Monitor/approva_notizie.html', {'notizia': notizia})
-    else:
-        if notizia:
-            notizia.approvata = True
-            notizia.save()
-            return myindex(request, ok='La notizia è ora stata attivata. A breve potrà comparire sui monitor.')
+    """
+    Gestisce la viualizzazione della notizia e la sua attivazione.
+
+    """
+    if request.user.has_perm('Monitor.change_Notizia') and not request.user.has_perm('Monitor.add_Notizia'):
+        notizia = Notizia.objects.filter(id=id_notizia).last()
+        if request.method == 'GET':
+            return render(request,'Monitor/approva_notizie.html', {'notizia': notizia})
         else:
-            return myindex(request, errore='La notizia non è stata trovata.')
+            if notizia:
+                notizia.approvata = True
+                notizia.save()
+                return myindex(request, ok='La notizia è ora stata attivata. A breve potrà comparire sui monitor.')
+            else:
+                return myindex(request, errore='La notizia non è stata trovata.')
+    else:
+            return myindex(request,errore='Solo i revisori possono approvare le notizie')

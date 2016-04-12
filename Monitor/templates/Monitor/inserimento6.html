@@ -11,7 +11,7 @@
         </div>
             <div class="form-group">
                 <label>Voglio che la Notizia compaia a (scelta multipla consentita):</label>
-                <form role="form" action="{% url 'Monitor:finalizza_notizia' %}" id="step6_form" method="post">
+                <form role="form" action="{% url 'Monitor:inserimento_step7' %}" id="step6_form" method="post">
                     {% csrf_token %}
                     <div class="checkbox">
                         {{ form.as_p}}

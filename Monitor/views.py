@@ -321,6 +321,7 @@ def approva_notizia(request, id_notizia):
     else:
         if notizia:
             notizia.approvata = True
+            notizia.save()
             return myindex(request, ok='La notizia è ora stata attivata. A breve potrà comparire sui monitor.')
         else:
             return myindex(request, errore='La notizia non è stata trovata.')

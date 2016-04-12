@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^inserisci/notizia', views.finalizza_notizia, name='finalizza_notizia'),
     url(r'^statoMonitor', views.monitor_in_errore, name='stato_monitor'),
     url(r'^NotizieDaApprovare', views.notizie_da_approvare, name='notizie_da_approvare'),
+    url(r'^approva/(?P<id_notizia>[0-9]+)$', views.approva_notizia, name='approva_notizia'),
 ]

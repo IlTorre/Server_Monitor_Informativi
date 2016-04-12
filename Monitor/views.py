@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -29,7 +29,7 @@ def mylogin(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect(reverse(myindex))
+                return HttpResponseRedirect(reverse('Monitor:index'))
             else:
                 return render(request, 'Monitor/login.html', {'messaggio': 'Account inattivo!'})
         else:
@@ -307,7 +307,20 @@ def monitor_in_errore(request):
 @login_required(login_url='/login')
 def notizie_da_approvare(request):
     """
-
+    Mostra la lista delle notizie da approvare
     """
     notizie = Notizia.objects.filter(approvata=False)
     return render(request, 'Monitor/notizie_da_approvare.html', {'notizie': notizie})
+
+
+@login_required(login_url='/login')
+def approva_notizia(request, id_notizia):
+    notizia = Notizia.objects.filter(id=id_notizia).last()
+    if request.method == 'GET':
+        return render(request,'Monitor/approva_notizie.html', {'notizia': notizia})
+    else:
+        if notizia:
+            notizia.approvata = True
+            return myindex(request, ok='La notizia è ora stata attivata. A breve potrà comparire sui monitor.')
+        else:
+            return myindex(request, errore='La notizia non è stata trovata.')

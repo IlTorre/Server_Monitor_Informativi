@@ -7,8 +7,8 @@
             {% csrf_token %}
             <div class="row">
                 <div class="col-md-12">
-                    <h1 class="page-head-line">Approvazione notizia:</h1>
-                    <h1 class="page-subhead-line">Informazioni sulla notizia da approvare:</h1>
+                    <h1 class="page-head-line">Modifica notizia:</h1>
+                    <h1 class="page-subhead-line">Informazioni sulla notizia da modificare:</h1>
                 </div>
             </div>
             <div class="row">
@@ -20,15 +20,15 @@
                         <div class="panel-body">
                             <div class="form-group">
                                 <label>Titolo</label>
-                                <input class="form-control" type="text" name="titolo" value="{{ notizia.titolo }}" disabled>
+                                <input class="form-control" type="text" name="titolo" value="{{ notizia.titolo }}" >
                             </div>
                             <div class="form-group">
                                 <label>Descrizione</label>
-                                <textarea class="form-control" rows="5" name="descrizione" disabled>{{ notizia.descrizione }}</textarea>
+                                <textarea class="form-control" rows="5" name="descrizione" >{{ notizia.descrizione }}</textarea>
                             </div>
                             <div class="form-group">
                                 <label>Data scadenza <span class="label label-warning" ><strong>ATTENZIONE:</strong> Dopo questa data la notizia non sarà più visualizzata</span></label>
-                                <input class="form-control" type="date" name="data_scadenza" value="{{ notizia.data_scadenza|date:"Y-g-d" }}" disabled>
+                                <input class="form-control" type="date" name="data_scadenza" value="{{ notizia.data_scadenza|date:"Y-g-d" }}" >
                             </div>
                         </div>
                     </div>
@@ -44,7 +44,12 @@
                                 <div class="">
                                     {% if notizia.immagine %}
                                     <div class="fileupload fileupload-new" data-provides="fileupload">
-                                        <div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;"><img src="{{ notizia.immagine.url }}"></div>
+                                        <span class="btn btn-file btn-default">
+                                            {{ immagine.as_p }}
+                                        </span>
+                                        <div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;">
+                                            <img src="{{ notizia.immagine.url }}">
+                                        </div>
                                     </div>
                                     {% endif %}
                                 </div>
@@ -55,7 +60,7 @@
 
             </div>
             <div class="col-md-6">
-                <button type="submit" class="btn btn-lg btn-success" >Approva</button>
+                <button type="submit" class="btn btn-lg btn-success" onClick="return confirm('Modificando la notizia dovrà essere nuovamente approvata da un revisore. Vuoi continuare?')">Modifica</button>
             </div>
         </form>
     </div>

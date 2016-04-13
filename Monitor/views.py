@@ -7,6 +7,7 @@ from .forms import *
 import datetime
 from .models import VisualizzataComune, VisualizzataFrazione, VisualizzataMonitor, MonitorUltimaConnessione
 from Server.settings import TEMPO_ALLERTA
+from django.utils import six
 
 # Create your views here.
 
@@ -57,8 +58,11 @@ def myindex(request, ok=None, errore=None):
         if not notizia.approvata:
             nnotizie += 1
 
+    notizie = Notizia.objects.filter(inserzionista=request.user)
+
     return render(request, 'Monitor/index.html', {'monitor_in_errore': nmonitor,
                                                   'notizie_non_approvate': nnotizie,
+                                                  'notizie':notizie,
                                                   'ok': ok,
                                                   'errore': errore})
 
@@ -223,6 +227,8 @@ def trasforma_data_ora(data, ora):
     g = int(g)
     data = datetime.date(a, m, g)
     hh, mm = str(ora).split(':')
+    hh=int(hh)
+    mm=int(mm)
     ora = datetime.time(hh, mm)
     data_c = datetime.datetime.combine(data, ora)
     return data_c
@@ -242,6 +248,7 @@ def finalizza_notizia(request):
             notizia.titolo = request.POST['titolo']
             notizia.descrizione = request.POST['descrizione']
             data_s = request.POST['data_scadenza']
+            print (data_s)
             if data_s != '':
                 notizia.data_scadenza = trasforma_data_ora(data_s, '23:59')
             notizia.inserzionista = request.user
@@ -319,16 +326,28 @@ def notizie_da_approvare(request):
     return render(request, 'Monitor/notizie_da_approvare.html', {'notizie': notizie})
 
 
-@login_required(login_url='/login')
+def controlla_gruppo (group, user):
+    if isinstance(group, six.string_types):
+        groups = (group,)
+    else:
+        groups = group
+    # First check if the user has the permission (even anon users)
+
+    if user.groups.filter(name__in=groups).exists():
+        return True
+    # As the last resort, show the login form
+    return False
+
+
 def approva_notizia(request, id_notizia):
     """
     Gestisce la viualizzazione della notizia e la sua attivazione.
 
     """
-    if request.user.has_perm('Monitor.change_Notizia') and not request.user.has_perm('Monitor.add_Notizia'):
+    if controlla_gruppo('Revisore',request.user):
         notizia = Notizia.objects.filter(id=id_notizia).last()
         if request.method == 'GET':
-            return render(request,'Monitor/approva_notizie.html', {'notizia': notizia})
+            return render(request, 'Monitor/approva_notizie.html', {'notizia': notizia})
         else:
             if notizia:
                 notizia.approvata = True
@@ -337,7 +356,7 @@ def approva_notizia(request, id_notizia):
             else:
                 return myindex(request, errore='La notizia non è stata trovata.')
     else:
-            return myindex(request,errore='Solo i revisori possono approvare le notizie')
+        return myindex(request, errore='Solo i revisori possono approvare le notizie')
 
 
 def monitor_connessione(request, monitor_id=None):

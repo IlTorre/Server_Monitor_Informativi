@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import HttpResponseRedirect
+from django.shortcuts import HttpResponseRedirect, HttpResponse, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from .forms import *
 import datetime
-from .models import VisualizzataComune, VisualizzataFrazione, VisualizzataMonitor
+from .models import VisualizzataComune, VisualizzataFrazione, VisualizzataMonitor, MonitorUltimaConnessione
 from Server.settings import TEMPO_ALLERTA
 
 # Create your views here.
@@ -338,3 +338,14 @@ def approva_notizia(request, id_notizia):
                 return myindex(request, errore='La notizia non è stata trovata.')
     else:
             return myindex(request,errore='Solo i revisori possono approvare le notizie')
+
+
+def monitor_connessione(request, monitor_id=None):
+    """
+    La classe gestisce la registrazione della connessione in modo da poter identificare
+    se un monitor presenta problemi di connessione
+    """
+    monitor = get_object_or_404(Monitor,pk=monitor_id)
+    MonitorUltimaConnessione(monitor=monitor).save()
+    return HttpResponse("Aggiornato")
+

@@ -18,7 +18,7 @@
             </div>
         {% else %}
             <div class="table-responsive">
-                <table class="table table-striped table-bordered table-hover">
+                <table class="table table-hover">
                     <thead>
                         <tr>
                             <th>#id</th>
@@ -29,7 +29,7 @@
                     </thead>
                     <tbody>
                         {% for notizia in notizie %}
-                            <tr onclick= "location.href='{% url 'Monitor:approva_notizia' notizia.id %}' ">
+                            <tr onclick = "location.href='{% url 'Monitor:approva_notizia' notizia.id %}'">
                                 <td># {{ notizia.id }}</td>
                                 <td>{{ notizia.titolo }}</td>
                                 <td>@{{ notizia.inserzionista }}</td>

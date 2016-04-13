@@ -58,11 +58,11 @@ def myindex(request, ok=None, errore=None):
         if not notizia.approvata:
             nnotizie += 1
 
-    notizie = Notizia.objects.filter(inserzionista=request.user)
+    n = [notizia for notizia in Notizia.objects.filter(inserzionista=request.user) if notizia.attiva]
 
     return render(request, 'Monitor/index.html', {'monitor_in_errore': nmonitor,
                                                   'notizie_non_approvate': nnotizie,
-                                                  'notizie':notizie,
+                                                  'notizie':n,
                                                   'ok': ok,
                                                   'errore': errore})
 
@@ -120,7 +120,7 @@ def nuova_notizia_3(request):
             comuni_sel = form.cleaned_data.get('comuni_s')
             comuni = []
             for id_com in comuni_sel:
-                comuni.append(Comune.objects.filter(id=id_com).last())
+                comuni.append(Comune.objects.filter(pk=id_com))
             request.session['comuni_id'] = comuni_sel
             return render(request, 'Monitor/inserimento3.html', {'comuni_selezionati': comuni})
         else:
@@ -164,7 +164,7 @@ def nuova_notizia_5(request):
             frazioni_sel = form.cleaned_data.get('frazioni_s')
             frazioni = []
             for id_fraz in frazioni_sel:
-                frazioni.append(Frazione.objects.filter(id=id_fraz).last())
+                frazioni.append(Frazione.objects.filter(pk=id_fraz))
             request.session['frazioni_id'] = frazioni_sel
             return render(request, 'Monitor/inserimento5.html', {'frazioni_selezionate': frazioni})
         else:
@@ -309,11 +309,7 @@ def monitor_in_errore(request):
     """
     Gestisce il recuero e la visualizzazione dei monitor che sono in errore
     """
-    monitor = Monitor.objects.all()
-    in_errore = []
-    for x in monitor:
-        if not x.funziona():
-            in_errore.append(x)
+    in_errore = [monitor for monitor in Monitor.objects.all() if not monitor.funziona()]
     return render(request, 'Monitor/monitor_errore.html', {'tempo':TEMPO_ALLERTA, 'monitor': in_errore})
 
 
@@ -327,6 +323,12 @@ def notizie_da_approvare(request):
 
 
 def controlla_gruppo (group, user):
+    """
+    Funzione per il controllo di appartenenza a un gruppo.
+    :param group: il nome del gruppo
+    :param user: l'utente da controllare
+    :return: True se appartiene al gruppo, False altrimenti
+    """
     if isinstance(group, six.string_types):
         groups = (group,)
     else:
@@ -345,7 +347,7 @@ def approva_notizia(request, id_notizia):
 
     """
     if controlla_gruppo('Revisore',request.user):
-        notizia = Notizia.objects.filter(id=id_notizia).last()
+        notizia = Notizia.objects.filter(pk=id_notizia)
         if request.method == 'GET':
             return render(request, 'Monitor/approva_notizie.html', {'notizia': notizia})
         else:

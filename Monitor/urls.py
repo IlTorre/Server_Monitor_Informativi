@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'^statoMonitor', views.monitor_in_errore, name='stato_monitor'),
     url(r'^NotizieDaApprovare', views.notizie_da_approvare, name='notizie_da_approvare'),
     url(r'^approva/(?P<id_notizia>[0-9]+)$', views.approva_notizia, name='approva_notizia'),
+    url(r'^modifica/(?P<id_notizia>[0-9]+)$', views.modifica_notizia, name='modifica_notizia'),
     url(r'^monitor/sonovivo/(?P<monitor_id>[0-9]+)$', views.monitor_connessione, name='monitor_vivo'),
 ]

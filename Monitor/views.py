@@ -47,6 +47,12 @@ def myindex(request, ok=None, errore=None):
     """
     Gestisce la visualizzazione della home page
     """
+    try:
+        del request.session['comuni_id']
+        del request.session['frazioni_id']
+        del request.session['monitor_id']
+    except KeyError:
+        pass
     monitor = Monitor.objects.all()
     nmonitor = 0
     for x in monitor:
@@ -62,7 +68,7 @@ def myindex(request, ok=None, errore=None):
 
     return render(request, 'Monitor/index.html', {'monitor_in_errore': nmonitor,
                                                   'notizie_non_approvate': nnotizie,
-                                                  'notizie':n,
+                                                  'notizie': n,
                                                   'ok': ok,
                                                   'errore': errore})
 
@@ -120,7 +126,7 @@ def nuova_notizia_3(request):
             comuni_sel = form.cleaned_data.get('comuni_s')
             comuni = []
             for id_com in comuni_sel:
-                comuni.append(Comune.objects.filter(pk=id_com))
+                comuni.append(Comune.objects.filter(pk=id_com).last())
             request.session['comuni_id'] = comuni_sel
             return render(request, 'Monitor/inserimento3.html', {'comuni_selezionati': comuni})
         else:
@@ -141,7 +147,8 @@ def nuova_notizia_4(request):
         all_comuni = request.POST['comuni_all']
 
         if eval(all_comuni):
-            return render(request, 'Monitor/inserimento_notizia.html')
+            immagine = CaricaFotoNotizia()
+            return render(request, 'Monitor/inserimento_notizia.html', {'immagine': immagine})
 
         else:
             com = request.session['comuni_id']
@@ -164,7 +171,7 @@ def nuova_notizia_5(request):
             frazioni_sel = form.cleaned_data.get('frazioni_s')
             frazioni = []
             for id_fraz in frazioni_sel:
-                frazioni.append(Frazione.objects.filter(pk=id_fraz))
+                frazioni.append(Frazione.objects.filter(pk=id_fraz).last())
             request.session['frazioni_id'] = frazioni_sel
             return render(request, 'Monitor/inserimento5.html', {'frazioni_selezionate': frazioni})
         else:
@@ -185,7 +192,8 @@ def nuova_notizia_6(request):
         all_frazioni = request.POST['frazioni_all']
 
         if eval(all_frazioni):
-            return render(request, 'Monitor/inserimento_notizia.html')
+            immagine = CaricaFotoNotizia()
+            return render(request, 'Monitor/inserimento_notizia.html', {'immagine': immagine})
 
         else:
             fraz = request.session['frazioni_id']
@@ -206,7 +214,8 @@ def nuova_notizia_7(request):
         if form.is_valid():
             monitor_sel = form.cleaned_data.get('monitor_s')
             request.session['monitor_id'] = monitor_sel
-            return render(request, 'Monitor/inserimento_notizia.html')
+            immagine = CaricaFotoNotizia()
+            return render(request, 'Monitor/inserimento_notizia.html', {'immagine': immagine})
         else:
             return myindex(
                 request,
@@ -219,7 +228,7 @@ def trasforma_data_ora(data, ora):
     Trasforma una data e un ora in un datetime necessario alla memorizzazione nel db
     :param data: una data espressa nel formato yyyy-mm-gg
     :param ora: un orario espresso nel formato hh:mm
-    :return
+    :return: l'oggetto di tipo datetime
     """
     a, m, g = str(data).split('-')
     a = int(a)
@@ -227,8 +236,8 @@ def trasforma_data_ora(data, ora):
     g = int(g)
     data = datetime.date(a, m, g)
     hh, mm = str(ora).split(':')
-    hh=int(hh)
-    mm=int(mm)
+    hh = int(hh)
+    mm = int(mm)
     ora = datetime.time(hh, mm)
     data_c = datetime.datetime.combine(data, ora)
     return data_c
@@ -248,17 +257,19 @@ def finalizza_notizia(request):
             notizia.titolo = request.POST['titolo']
             notizia.descrizione = request.POST['descrizione']
             data_s = request.POST['data_scadenza']
-            print (data_s)
             if data_s != '':
                 notizia.data_scadenza = trasforma_data_ora(data_s, '23:59')
             notizia.inserzionista = request.user
             notizia.save()
             try:
                 comuni_id = request.session['comuni_id']
+                del request.session['comuni_id']
                 try:
                     frazioni_id = request.session['frazioni_id']
+                    del request.session['frazioni_id']
                     try:
                         monitor_id = request.session['monitor_id']
+                        del request.session['monitor_id']
                         """
                         Inserimento notizia per monitor
                         """
@@ -310,7 +321,7 @@ def monitor_in_errore(request):
     Gestisce il recuero e la visualizzazione dei monitor che sono in errore
     """
     in_errore = [monitor for monitor in Monitor.objects.all() if not monitor.funziona()]
-    return render(request, 'Monitor/monitor_errore.html', {'tempo':TEMPO_ALLERTA, 'monitor': in_errore})
+    return render(request, 'Monitor/monitor_errore.html', {'tempo': TEMPO_ALLERTA, 'monitor': in_errore})
 
 
 @login_required(login_url='/login')
@@ -322,7 +333,7 @@ def notizie_da_approvare(request):
     return render(request, 'Monitor/notizie_da_approvare.html', {'notizie': notizie})
 
 
-def controlla_gruppo (group, user):
+def controlla_gruppo(group, user):
     """
     Funzione per il controllo di appartenenza a un gruppo.
     :param group: il nome del gruppo
@@ -344,10 +355,9 @@ def controlla_gruppo (group, user):
 def approva_notizia(request, id_notizia):
     """
     Gestisce la viualizzazione della notizia e la sua attivazione.
-
     """
-    if controlla_gruppo('Revisore',request.user):
-        notizia = Notizia.objects.filter(pk=id_notizia)
+    if controlla_gruppo('Revisore', request.user):
+        notizia = Notizia.objects.filter(pk=id_notizia).last()
         if request.method == 'GET':
             return render(request, 'Monitor/approva_notizie.html', {'notizia': notizia})
         else:
@@ -361,12 +371,36 @@ def approva_notizia(request, id_notizia):
         return myindex(request, errore='Solo i revisori possono approvare le notizie')
 
 
+def modifica_notizia(request, id_notizia):
+    notizia = Notizia.objects.filter(pk=id_notizia).last()
+    if not notizia:
+        return myindex(request, errore='La notizia non è stata trovata.')
+    else:
+        if request.method == 'GET':
+            immagine = CaricaFotoNotizia(instance=notizia)
+            return render(request, 'Monitor/modifica_notizia.html', {'notizia': notizia, 'immagine': immagine})
+        else:
+            immagine = CaricaFotoNotizia(request.POST, request.FILES, instance=notizia)
+            if immagine.is_valid():
+                notizia = immagine.save(commit=False)
+                notizia.titolo = request.POST['titolo']
+                notizia.descrizione = request.POST['descrizione']
+                data_s = request.POST['data_scadenza']
+                if data_s != '':
+                    notizia.data_scadenza = trasforma_data_ora(data_s, '23:59')
+                notizia.approvata = False
+                notizia.save()
+                return myindex(request, ok='La notizia è stata modificata.')
+            else:
+                return myindex(request, errore="Si è verificato un errore con il caricamento dell'immagine\n" +
+                                               "Cod. Errore: modifica_notizia")
+
+
 def monitor_connessione(request, monitor_id=None):
     """
     La classe gestisce la registrazione della connessione in modo da poter identificare
     se un monitor presenta problemi di connessione
     """
-    monitor = get_object_or_404(Monitor,pk=monitor_id)
+    monitor = get_object_or_404(Monitor, pk=monitor_id)
     MonitorUltimaConnessione(monitor=monitor).save()
     return HttpResponse("Aggiornato")
-

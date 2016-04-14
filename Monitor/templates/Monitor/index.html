@@ -78,7 +78,7 @@
                     </thead>
                     <tbody>
                         {% for notizia in notizie %}
-                            <tr onclick = "location.href='{% url 'Monitor:approva_notizia' notizia.id %}'">
+                            <tr onclick = "location.href='{% url 'Monitor:modifica_notizia' notizia.id %}'">
                                 <td># {{ notizia.id }}</td>
                                 <td>{{ notizia.titolo }}</td>
                                 <td>{{ notizia.data_inserimento }}</td>

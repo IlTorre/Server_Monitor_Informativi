@@ -105,7 +105,7 @@ class Notizia(models.Model):
     """
     titolo = models.CharField(max_length=30)
     descrizione = models.CharField(max_length=400)
-    immagine = models.ImageField(upload_to=get_nome_immagine_notizia, default=None, null=True, blank=True)
+    immagine = models.ImageField(upload_to=get_nome_immagine_notizia, default=None)
     approvata = models.BooleanField(default=False)
     inserzionista = models.ForeignKey(MyUser)
     data_inserimento = models.DateTimeField(default=timezone.now)
@@ -134,7 +134,7 @@ class VisualizzataFrazione(models.Model):
     Contiene le notizie che si è deciso di visualizzare su una frazione
     """
     notizia = models.ForeignKey(Notizia)
-    comune = models.ForeignKey(Frazione)
+    frazione = models.ForeignKey(Frazione)
 
 
 class VisualizzataMonitor(models.Model):
@@ -142,7 +142,7 @@ class VisualizzataMonitor(models.Model):
     Contiene le notizie che si è deciso di visualizzare su un monitor in particolare
     """
     notizia = models.ForeignKey(Notizia)
-    comune = models.ForeignKey(Monitor)
+    monitor = models.ForeignKey(Monitor)
 
 
 class UltimoAggiornamento(models.Model):

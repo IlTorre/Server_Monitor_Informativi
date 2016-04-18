@@ -8,6 +8,7 @@ import datetime
 from .models import VisualizzataComune, VisualizzataFrazione, VisualizzataMonitor, MonitorUltimaConnessione
 from Server.settings import TEMPO_ALLERTA
 from django.utils import six
+import json
 
 # Create your views here.
 
@@ -404,3 +405,23 @@ def monitor_connessione(request, monitor_id=None):
     monitor = get_object_or_404(Monitor, pk=monitor_id)
     MonitorUltimaConnessione(monitor=monitor).save()
     return HttpResponse("Aggiornato")
+
+
+def monitor_ottieni_notizia(request,monitor_id=None):
+    """
+    Comunicazione delle notizie da mostrare su un monitor
+    :param request: la richiesta
+    :param monitor_id: l'id identificativo del monitor
+    :return: una lista json di notizie oppure un 404 in caso l'id non corrisponda a nessun monitor
+    """
+    monitor = get_object_or_404(Monitor, pk=monitor_id)
+
+    notizie = [x.notizia for x in VisualizzataComune.objects.filter(comune=monitor.frazione_posizionamento.comune)]
+    notizie += [x.notizia for x in VisualizzataFrazione.objects.filter(frazione=monitor.frazione_posizionamento)]
+    notizie += [x.notizia for x in VisualizzataMonitor.objects.filter(monitor=monitor)]
+    sorted(notizie, key= lambda notizia: notizia.data_scadenza)
+
+    to_js = {notizia.id: [notizia.titolo, notizia.descrizione, str(notizia.immagine),str(notizia.data_scadenza)]
+             for notizia in notizie
+             if notizia.attiva()}
+    return HttpResponse(json.dumps(to_js), content_type="application/json")

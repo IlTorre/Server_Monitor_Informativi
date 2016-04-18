@@ -18,4 +18,5 @@ urlpatterns = [
     url(r'^approva/(?P<id_notizia>[0-9]+)$', views.approva_notizia, name='approva_notizia'),
     url(r'^modifica/(?P<id_notizia>[0-9]+)$', views.modifica_notizia, name='modifica_notizia'),
     url(r'^monitor/sonovivo/(?P<monitor_id>[0-9]+)$', views.monitor_connessione, name='monitor_vivo'),
+    url(r'^monitor/notizie/(?P<monitor_id>[0-9]+)$', views.monitor_ottieni_notizia, name='monitor_ottieni_notizia'),
 ]

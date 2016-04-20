@@ -7,7 +7,7 @@ from .forms import *
 import datetime
 from .models import VisualizzataComune, VisualizzataFrazione, VisualizzataMonitor, MonitorUltimaConnessione
 from Server.settings import TEMPO_ALLERTA
-from django.utils import six
+from django.utils import six, timezone
 import json
 from .decorators import group_required
 
@@ -310,7 +310,7 @@ def finalizza_notizia(request):
                 for comune in comuni:
                     VisualizzataComune(comune=comune, notizia=notizia).save()
 
-            return myindex(ok="Notizia inserita correttamente")
+            return myindex(request, ok="Notizia inserita correttamente")
         else:
             return render(request,
                           'Monitor/inserimento_notizia.html',
@@ -377,6 +377,12 @@ def approva_notizia(request, id_notizia):
 
 
 def modifica_notizia(request, id_notizia):
+    """
+    Si occupa della modifica di una notizia
+    :param request: la rishiesta http
+    :param id_notizia: l'id della notizia da modificare
+    :return: il render con l'esito dell' operazione
+    """
     notizia = Notizia.objects.filter(pk=id_notizia).last()
     if not notizia:
         return myindex(request, errore='La notizia non è stata trovata.')
@@ -437,3 +443,18 @@ def monitor_ottieni_notizia(request, monitor_id=None):
              for notizia in notizie
              if notizia.attiva()}
     return HttpResponse(json.dumps(to_js), content_type="application/json")
+
+
+def lista_notizie_attive(request):
+    notizie = [notizia for notizia in Notizia.objects.all() if notizia.attiva()]
+    return render(request, 'Monitor/notizie_attive.html', {'notizie': notizie})
+
+
+def lista_notizie_da_approvare(request):
+    notizie = [notizia for notizia in Notizia.objects.all() if not notizia.approvata]
+    return render(request, 'Monitor/notizie_non_attive.html', {'notizie': notizie})
+
+
+def lista_notizie_scadute(request):
+    notizie = [notizia for notizia in Notizia.objects.all() if notizia.data_scadenza < timezone.now()]
+    return render(request, 'Monitor/notizie_scadute.html', {'notizie': notizie})

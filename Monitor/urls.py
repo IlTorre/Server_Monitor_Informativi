@@ -19,4 +19,7 @@ urlpatterns = [
     url(r'^modifica/(?P<id_notizia>[0-9]+)$', views.modifica_notizia, name='modifica_notizia'),
     url(r'^monitor/sonovivo/(?P<monitor_id>[0-9]+)$', views.monitor_connessione, name='monitor_vivo'),
     url(r'^monitor/notizie/(?P<monitor_id>[0-9]+)$', views.monitor_ottieni_notizia, name='monitor_ottieni_notizia'),
+    url(r'^notizie/attive/$', views.lista_notizie_attive, name='lista_attive'),
+    url(r'^notizie/non_attive/$', views.lista_notizie_da_approvare, name='lista_non_attive'),
+    url(r'^notizie/scadute/$', views.lista_notizie_scadute, name='lista_scadute'),
 ]

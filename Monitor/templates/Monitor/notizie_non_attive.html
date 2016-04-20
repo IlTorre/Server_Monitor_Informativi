@@ -1,0 +1,51 @@
+{% extends 'Monitor/base.html' %}
+
+{% block body %}
+
+    <div id="page-inner">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="page-head-line">Notizie Non ancora Attive</h1>
+                <h1 class="page-subhead-line">Le seguenti notizie non sono publicate sui monitor.
+                    Devono prima ottenere l'approvazione di un revisore.
+                    Clicca su quelle che intendi modificare.</h1>
+            </div>
+        </div>
+
+        {% if notizie|length == 0 %}
+            <div class="panel">
+                <div class="alert alert-success" role="alert">
+                    Nessuna notizia non attiva!
+                    Tutte le notizie publicate sono state approvate oppure non sono state inserite notizie.
+                </div>
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#id</th>
+                            <th>Titolo</th>
+                            <th>@Inserzionista</th>
+                            <th>Data di inserimento</th>
+                            <th>Data di scadenza</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for notizia in notizie %}
+                            <tr onclick = "location.href='{% url 'Monitor:modifica_notizia' notizia.id %}'">
+                                <td># {{ notizia.id }}</td>
+                                <td>{{ notizia.titolo }}</td>
+                                <td>@{{ notizia.inserzionista }}</td>
+                                <td>{{ notizia.data_inserimento}}</td>
+                                <td>{{ notizia.data_scadenza }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+    </div>
+
+{% endblock %}

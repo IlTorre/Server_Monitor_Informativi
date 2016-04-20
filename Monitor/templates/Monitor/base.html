@@ -36,7 +36,7 @@
 
             <div class="header-right">
 				<a href="{% url 'Monitor:logout' %}" class="btn btn-danger" title="Logout">
-                    <i class="fa fa-exclamation-circle fa-2x"></i>
+                    <i class="glyphicon glyphicon-log-out fa-2x"></i>
                 </a>
             </div>
 
@@ -60,8 +60,9 @@
 
 
                     <li>
-                        <a  href="{% url 'Monitor:index' %}"><i class="fa fa-dashboard "></i>Stato notizie</a>
+                        <a  href="{% url 'Monitor:index' %}"><i class="fa fa-home "></i>Scrivania</a>
                     </li>
+
                     <li>
                          <a href="#"><i class="fa fa-desktop "></i>Nuova notizia<span class="fa arrow"></span></a>
                          <ul class="nav nav-second-level">
@@ -70,6 +71,23 @@
                             </li>
                             <li>
                                 <a href=""><i class="fa fa-bell "></i>Per flusso tematico</a>
+                            </li>
+
+
+                        </ul>
+                    </li>
+
+                    <li>
+                         <a href="#"><i class="fa fa-bullhorn "></i>Riepilogo Notizie<span class="fa arrow"></span></a>
+                         <ul class="nav nav-second-level">
+                            <li>
+                                <a href="{% url 'Monitor:lista_attive' %}"><i class="fa fa-road"></i>Attive</a>
+                            </li>
+                             <li>
+                                <a href="{% url 'Monitor:lista_non_attive' %}"><i class="fa fa-clock-o"></i>Non ancora approvate</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'Monitor:lista_scadute' %}"><i class="fa fa-trash "></i>Archiviate</a>
                             </li>
 
 

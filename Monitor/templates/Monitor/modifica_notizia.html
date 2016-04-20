@@ -44,7 +44,11 @@
                                         <strong>ATTENZIONE:</strong>
                                         Dopo questa data la notizia non sarà più visualizzata
                                     </span>
-                                    <input class="form-control" type="date" id="theDate" name="data_scadenza" value="data_scadenza">
+                                    <input class="form-control"
+                                           type="date"
+                                           id="theDate"
+                                           name="data_scadenza"
+                                           value="{{ form.instance.data_scadenza|date:"Y-g-d" }}">
                                 </label>
                             </div>
                         </div>
@@ -57,7 +61,7 @@
                         </div>
                         <div class="panel-body">
                             <div class="form-group">
-                                <label class="control-label col-lg-4">Imagine Caricata</label>
+
                                 <div class="">
 
                                     <div class="fileupload fileupload-new" data-provides="fileupload">
@@ -67,16 +71,29 @@
                                                 {{ form.immagine}}
                                             </label>
                                         </span>
-                                        {% if form.immagine.value.url %}
-                                            <label class="control-label col-lg-4">
-                                                Attualmente: <br />
-                                                <div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;">
-                                                    <img src="{{ form.immagine.value.url }}">
+                                        {% if form.immagine.value %}
+                                            <div id="port-folio">
+                                                <div class="portfolio-item awesome mix_all"
+                                                     data-cat="awesome"
+                                                     style="display: inline-block;
+                                                     opacity: 1;">
+                                                    <img src="{{ form.immagine.value.url }}" class="img-responsive " alt="">
+                                                    <div class="overlay">
+                                                        <p>
+                                                            <span>
+                                                            Immagine Attuale
+                                                            </span>
+                                                        </p>
+                                                        <a class="preview btn btn-info "
+                                                           title="{{ form.titolo.value }}"
+                                                           href="{{ form.immagine.value.url }}">
+                                                            <i class="fa fa-plus fa-2x"></i>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                            </label>
+                                            </div>
                                         {% endif %}
                                     </div>
-
                                 </div>
                             </div>
                         </div>

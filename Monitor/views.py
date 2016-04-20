@@ -9,6 +9,7 @@ from .models import VisualizzataComune, VisualizzataFrazione, VisualizzataMonito
 from Server.settings import TEMPO_ALLERTA
 from django.utils import six
 import json
+from .decorators import group_required
 
 # Create your views here.
 
@@ -90,18 +91,21 @@ def nuova_notizia_1(request):
     """
     Gestisce l'inserimento della notizia su tutti i monitor o solo su una parte di essi
     """
-    if request.method == 'GET':
-        return render(request, 'Monitor/inserimento1.html')
-    else:
-        all_monitor = request.POST['step1']
-        if eval(all_monitor):
-            form = FormNotizia()
-            return render(request, 'Monitor/inserimento_notizia.html', {'form': form})
+    if controlla_gruppo('Inserzionista', request.user):
+        if request.method == 'GET':
+            return render(request, 'Monitor/inserimento1.html')
         else:
-            return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
+            all_monitor = request.POST['step1']
+            if eval(all_monitor):
+                form = FormNotizia()
+                return render(request, 'Monitor/inserimento_notizia.html', {'form': form})
+            else:
+                return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
+    else:
+        return myindex(request, errore='Solo gli inserzionisti possono inserire le notizie')
 
 
-@login_required(login_url='/login')
+@group_required('Inserzionista', login_url='/login')
 def nuova_notizia_2(request):
     """
     Gestisce la selezione dei comuni in cui far comparire la notizia
@@ -113,7 +117,7 @@ def nuova_notizia_2(request):
             return HttpResponseRedirect(reverse('Monitor:nuova_notzia_da_comune'))
 
 
-@login_required(login_url='/login')
+@group_required('Inserzionista', login_url='/login')
 def nuova_notizia_3(request):
     """
     Gestisce la selezione dei comuni e gestisce la richiesta di inserimento su tutti i monitor dei comuni selezionati
@@ -137,7 +141,7 @@ def nuova_notizia_3(request):
             )
 
 
-@login_required(login_url='/login')
+@group_required('Inserzionista', login_url='/login')
 def nuova_notizia_4(request):
     """
     Gestisce l'inserimento su tutti i monitor dei comuni selezionati o mostra la lista delle frazioni
@@ -157,7 +161,7 @@ def nuova_notizia_4(request):
             return render(request, 'Monitor/inserimento4.html', {'form': form})
 
 
-@login_required(login_url='/login')
+@group_required('Inserzionista', login_url='/login')
 def nuova_notizia_5(request):
     """
     Gestisce la selezione delle frazioni e gestisce la richiesta di inserimento su tutti i monitor delle frazioni
@@ -182,7 +186,7 @@ def nuova_notizia_5(request):
             )
 
 
-@login_required(login_url='/login')
+@group_required('Inserzionista', login_url='/login')
 def nuova_notizia_6(request):
     """
     Gestisce l'inserimento su tutti i monitor delle frazioni selezionate o mostra la lista dei monitor
@@ -202,7 +206,7 @@ def nuova_notizia_6(request):
             return render(request, 'Monitor/inserimento6.html', {'form': form})
 
 
-@login_required(login_url='/login')
+@group_required('Inserzionista', login_url='/login')
 def nuova_notizia_7(request):
     """
     Gestisce la selezione dei monitor e gestisce la richiesta di inserimento su i monitor selezionati
@@ -244,7 +248,7 @@ def trasforma_data_ora(data, ora):
     return data_c
 
 
-@login_required(login_url='/login')
+@group_required('Inserzionista', login_url='/login')
 def finalizza_notizia(request):
     """
     Gestisce il salvataggio della notizia
@@ -306,7 +310,7 @@ def finalizza_notizia(request):
                 for comune in comuni:
                     VisualizzataComune(comune=comune, notizia=notizia).save()
 
-            return HttpResponseRedirect(reverse('Monitor:index'))
+            return myindex(ok="Notizia inserita correttamente")
         else:
             return render(request,
                           'Monitor/inserimento_notizia.html',
@@ -377,28 +381,32 @@ def modifica_notizia(request, id_notizia):
     if not notizia:
         return myindex(request, errore='La notizia non è stata trovata.')
     else:
-        if request.method == 'GET':
-            form = FormNotizia(instance=notizia)
-            return render(request, 'Monitor/modifica_notizia.html', {'form': form, 'data_scadenza': notizia.data_scadenza})
-        else:
-            form = FormNotizia(request.POST, request.FILES, instance=notizia)
-            if form.is_valid():
-                notizia = form.save(commit=False)
-                data_s = request.POST['data_scadenza']
-                if data_s != '':
-                    notizia.data_scadenza = trasforma_data_ora(data_s, '23:59')
-                notizia.approvata = False
-                notizia.inserzionista = request.user
-                notizia.save()
-                return myindex(request, ok='La notizia è stata modificata.')
+        if controlla_gruppo('Inserzionista', request.user):
+            if request.method == 'GET':
+                form = FormNotizia(instance=notizia)
+                return render(request,
+                              'Monitor/modifica_notizia.html',
+                              {'form': form})
             else:
-                return render(
-                    request,
-                    'Monitor/modifica_notizia.html',
-                    {'form': form,
-                     'data_scadenza': request.POST['data_scadenza'],
-                     'errore': "I campi Titolo e Descrizione sono obbligatori."}
-                )
+                form = FormNotizia(request.POST, request.FILES, instance=notizia)
+                if form.is_valid():
+                    notizia = form.save(commit=False)
+                    data_s = request.POST['data_scadenza']
+                    if data_s != '':
+                        notizia.data_scadenza = trasforma_data_ora(data_s, '23:59')
+                    notizia.approvata = False
+                    notizia.inserzionista = request.user
+                    notizia.save()
+                    return myindex(request, ok='La notizia è stata modificata.')
+                else:
+                    return render(
+                        request,
+                        'Monitor/modifica_notizia.html',
+                        {'form': form,
+                         'errore': "I campi Titolo e Descrizione sono obbligatori."}
+                    )
+        else:
+            return myindex(request, errore='Solo gli inserzionisti possono modificare le notizie')
 
 
 def monitor_connessione(request, monitor_id=None):
@@ -411,7 +419,7 @@ def monitor_connessione(request, monitor_id=None):
     return HttpResponse("Aggiornato")
 
 
-def monitor_ottieni_notizia(request,monitor_id=None):
+def monitor_ottieni_notizia(request, monitor_id=None):
     """
     Comunicazione delle notizie da mostrare su un monitor
     :param request: la richiesta
@@ -423,9 +431,9 @@ def monitor_ottieni_notizia(request,monitor_id=None):
     notizie = [x.notizia for x in VisualizzataComune.objects.filter(comune=monitor.frazione_posizionamento.comune)]
     notizie += [x.notizia for x in VisualizzataFrazione.objects.filter(frazione=monitor.frazione_posizionamento)]
     notizie += [x.notizia for x in VisualizzataMonitor.objects.filter(monitor=monitor)]
-    sorted(notizie, key= lambda notizia: notizia.data_scadenza)
+    sorted(notizie, key=lambda notizia: notizia.data_scadenza)
 
-    to_js = {notizia.id: [notizia.titolo, notizia.descrizione, str(notizia.immagine),str(notizia.data_scadenza)]
+    to_js = {notizia.id: [notizia.titolo, notizia.descrizione, str(notizia.immagine), str(notizia.data_scadenza)]
              for notizia in notizie
              if notizia.attiva()}
     return HttpResponse(json.dumps(to_js), content_type="application/json")

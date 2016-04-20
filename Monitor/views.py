@@ -255,6 +255,7 @@ def finalizza_notizia(request):
         immagine = CaricaFotoNotizia(request.POST, request.FILES)
         if immagine.is_valid():
             notizia = immagine.save(commit=False)
+            notizia.immagine=request.FILES['immagine']
             notizia.titolo = request.POST['titolo']
             notizia.descrizione = request.POST['descrizione']
             data_s = request.POST['data_scadenza']

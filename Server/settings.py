@@ -135,5 +135,13 @@ NO_PROFILO = os.path.join(MEDIA_URL, 'default/no_profilo.jpg')
 TEMPO_ALLERTA = 2
 
 
+# Impostare la lunghezza massima consentita per il titolo delle notizie
+MAX_LUN_TITOLO = 40
+
+
+# Impostare la lunghezza massima del corpo della notizia
+MAX_LUN_DESCRIZIONE = 400
+
+
 # Specifico il modello da usare per gli utenti Django
 AUTH_USER_MODEL = 'Monitor.MyUser'

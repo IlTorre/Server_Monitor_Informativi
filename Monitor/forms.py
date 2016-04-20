@@ -1,5 +1,6 @@
 from django import forms
 from .models import Comune, Frazione, Monitor, Notizia
+from Server import settings
 
 
 def ottieni_comuni():
@@ -82,6 +83,8 @@ class CaricaFotoNotizia (forms.ModelForm):
     """
     Classe che implementa il form di caricamento della foto delle notizie
     """
+    titolo = forms.CharField(required=True, max_length=settings.MAX_LUN_TITOLO)
+    descrizione = forms.CharField(widget=forms.Textarea,required=True, max_length=settings.MAX_LUN_DESCRIZIONE)
     immagine = forms.ImageField(required=False)
 
     class Meta:
@@ -89,4 +92,4 @@ class CaricaFotoNotizia (forms.ModelForm):
         Classe delle metainformazioni che specifica il modello da utilizzare e i campi.
         """
         model = Notizia
-        fields = ['immagine']
+        fields = ['titolo','descrizione','immagine']

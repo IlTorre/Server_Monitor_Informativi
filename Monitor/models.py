@@ -103,8 +103,8 @@ class Notizia(models.Model):
     """
     Entità che implementa l'entità notizia nel db
     """
-    titolo = models.CharField(max_length=30)
-    descrizione = models.CharField(max_length=400)
+    titolo = models.CharField(max_length=settings.MAX_LUN_TITOLO)
+    descrizione = models.TextField(max_length=settings.MAX_LUN_DESCRIZIONE)
     immagine = models.ImageField(upload_to=get_nome_immagine_notizia, default=None)
     approvata = models.BooleanField(default=False)
     inserzionista = models.ForeignKey(MyUser)

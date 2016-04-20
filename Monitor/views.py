@@ -95,8 +95,8 @@ def nuova_notizia_1(request):
     else:
         all_monitor = request.POST['step1']
         if eval(all_monitor):
-            immagine = CaricaFotoNotizia()
-            return render(request, 'Monitor/inserimento_notizia.html', {'immagine': immagine})
+            form = FormNotizia()
+            return render(request, 'Monitor/inserimento_notizia.html', {'form': form})
         else:
             return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
 
@@ -148,8 +148,8 @@ def nuova_notizia_4(request):
         all_comuni = request.POST['comuni_all']
 
         if eval(all_comuni):
-            immagine = CaricaFotoNotizia()
-            return render(request, 'Monitor/inserimento_notizia.html', {'immagine': immagine})
+            form = FormNotizia()
+            return render(request, 'Monitor/inserimento_notizia.html', {'form': form})
 
         else:
             com = request.session['comuni_id']
@@ -193,8 +193,8 @@ def nuova_notizia_6(request):
         all_frazioni = request.POST['frazioni_all']
 
         if eval(all_frazioni):
-            immagine = CaricaFotoNotizia()
-            return render(request, 'Monitor/inserimento_notizia.html', {'immagine': immagine})
+            form = FormNotizia()
+            return render(request, 'Monitor/inserimento_notizia.html', {'form': form})
 
         else:
             fraz = request.session['frazioni_id']
@@ -215,8 +215,8 @@ def nuova_notizia_7(request):
         if form.is_valid():
             monitor_sel = form.cleaned_data.get('monitor_s')
             request.session['monitor_id'] = monitor_sel
-            immagine = CaricaFotoNotizia()
-            return render(request, 'Monitor/inserimento_notizia.html', {'immagine': immagine})
+            form = FormNotizia()
+            return render(request, 'Monitor/inserimento_notizia.html', {'form': form})
         else:
             return myindex(
                 request,
@@ -252,12 +252,9 @@ def finalizza_notizia(request):
     if request.method == 'GET':
         return HttpResponseRedirect(reverse('Monitor:nuova_notizia_da_comune'))
     else:
-        immagine = CaricaFotoNotizia(request.POST, request.FILES)
-        if immagine.is_valid():
-            notizia = immagine.save(commit=False)
-            notizia.immagine=request.FILES['immagine']
-            notizia.titolo = request.POST['titolo']
-            notizia.descrizione = request.POST['descrizione']
+        form = FormNotizia(request.POST, request.FILES)
+        if form.is_valid():
+            notizia = form.save(commit=False)
             data_s = request.POST['data_scadenza']
             if data_s != '':
                 notizia.data_scadenza = trasforma_data_ora(data_s, '23:59')
@@ -311,10 +308,12 @@ def finalizza_notizia(request):
 
             return HttpResponseRedirect(reverse('Monitor:index'))
         else:
-            return myindex(
-                request,
-                errore="Si è verificato un errore con il form CaricaFotoNotizia. Riprova\nCod Errore: finalizza_notizia"
-            )
+            return render(request,
+                          'Monitor/inserimento_notizia.html',
+                          {'form': form,
+                           'data_scadenza': request.POST['data_scadenza'],
+                           'errore': "I campi Titolo e Descrizione sono obbligatori"}
+                          )
 
 
 @login_required(login_url='/login')
@@ -379,23 +378,27 @@ def modifica_notizia(request, id_notizia):
         return myindex(request, errore='La notizia non è stata trovata.')
     else:
         if request.method == 'GET':
-            immagine = CaricaFotoNotizia(instance=notizia)
-            return render(request, 'Monitor/modifica_notizia.html', {'notizia': notizia, 'immagine': immagine})
+            form = FormNotizia(instance=notizia)
+            return render(request, 'Monitor/modifica_notizia.html', {'form': form, 'data_scadenza': notizia.data_scadenza})
         else:
-            immagine = CaricaFotoNotizia(request.POST, request.FILES, instance=notizia)
-            if immagine.is_valid():
-                notizia = immagine.save(commit=False)
-                notizia.titolo = request.POST['titolo']
-                notizia.descrizione = request.POST['descrizione']
+            form = FormNotizia(request.POST, request.FILES, instance=notizia)
+            if form.is_valid():
+                notizia = form.save(commit=False)
                 data_s = request.POST['data_scadenza']
                 if data_s != '':
                     notizia.data_scadenza = trasforma_data_ora(data_s, '23:59')
                 notizia.approvata = False
+                notizia.inserzionista = request.user
                 notizia.save()
                 return myindex(request, ok='La notizia è stata modificata.')
             else:
-                return myindex(request, errore="Si è verificato un errore con il caricamento dell'immagine\n" +
-                                               "Cod. Errore: modifica_notizia")
+                return render(
+                    request,
+                    'Monitor/modifica_notizia.html',
+                    {'form': form,
+                     'data_scadenza': request.POST['data_scadenza'],
+                     'errore': "I campi Titolo e Descrizione sono obbligatori."}
+                )
 
 
 def monitor_connessione(request, monitor_id=None):

@@ -79,12 +79,12 @@ class SceltaMonitor (forms.Form):
             self.fields['monitor_s'].choices = ottieni_monitor(id_frazioni)
 
 
-class CaricaFotoNotizia (forms.ModelForm):
+class FormNotizia (forms.ModelForm):
     """
     Classe che implementa il form di caricamento della foto delle notizie
     """
-    titolo = forms.CharField(required=True, max_length=settings.MAX_LUN_TITOLO)
-    descrizione = forms.CharField(widget=forms.Textarea,required=True, max_length=settings.MAX_LUN_DESCRIZIONE)
+    titolo = forms.CharField(required=True, max_length=settings.MAX_LUN_TITOLO, label='')
+    descrizione = forms.CharField(widget=forms.Textarea,required=True, max_length=settings.MAX_LUN_DESCRIZIONE, label='')
     immagine = forms.ImageField(required=False)
 
     class Meta:

@@ -445,16 +445,19 @@ def monitor_ottieni_notizia(request, monitor_id=None):
     return HttpResponse(json.dumps(to_js), content_type="application/json")
 
 
+@login_required(login_url='/login')
 def lista_notizie_attive(request):
     notizie = [notizia for notizia in Notizia.objects.all() if notizia.attiva()]
     return render(request, 'Monitor/notizie_attive.html', {'notizie': notizie})
 
 
+@login_required(login_url='/login')
 def lista_notizie_da_approvare(request):
     notizie = [notizia for notizia in Notizia.objects.all() if not notizia.approvata]
     return render(request, 'Monitor/notizie_non_attive.html', {'notizie': notizie})
 
 
+@login_required(login_url='/login')
 def lista_notizie_scadute(request):
     notizie = [notizia for notizia in Notizia.objects.all() if notizia.data_scadenza < timezone.now()]
     return render(request, 'Monitor/notizie_scadute.html', {'notizie': notizie})

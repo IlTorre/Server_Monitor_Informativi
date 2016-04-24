@@ -75,7 +75,7 @@ class Monitor(models.Model):
 
     def funziona(self):
         try:
-            funziona = MonitorUltimaConnessione.objects.filter(id=self.id).last().funziona()
+            funziona = MonitorUltimaConnessione.objects.filter(monitor=self).last().funziona()
         except AttributeError:
             return False
         return funziona

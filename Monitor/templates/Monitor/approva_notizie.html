@@ -43,9 +43,26 @@
                                 <label class="control-label col-lg-4">Imagine Caricata</label>
                                 <div class="">
                                     {% if notizia.immagine %}
-                                    <div class="fileupload fileupload-new" data-provides="fileupload">
-                                        <div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;"><img src="{{ notizia.immagine.url }}"></div>
-                                    </div>
+                                    <div id="port-folio">
+                                                <div class="portfolio-item awesome mix_all"
+                                                     data-cat="awesome"
+                                                     style="display: inline-block;
+                                                     opacity: 1;">
+                                                    <img src="{{ notizia.immagine.url }}" class="img-responsive " alt="">
+                                                    <div class="overlay">
+                                                        <p>
+                                                            <span>
+                                                            Immagine Attuale
+                                                            </span>
+                                                        </p>
+                                                        <a class="preview btn btn-info "
+                                                           title="{{ notizia.titolo }}"
+                                                           href="{{ notizia.immagine.url }}">
+                                                            <i class="fa fa-plus fa-2x"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
                                     {% endif %}
                                 </div>
                             </div>

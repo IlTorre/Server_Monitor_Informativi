@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Comune, Frazione, Monitor, MyUser, VisualizzataComune, Notizia
+from .models import Comune, Frazione, Monitor, MyUser, VisualizzataComune, Notizia, MonitorUltimaConnessione
 
 # Register your models here.
 
@@ -51,9 +51,17 @@ class TutteNotizie(admin.ModelAdmin):
     list_display = ('titolo', 'attiva')
     ordering = ['titolo']
 
+
+class TutteCon(admin.ModelAdmin):
+    """
+    Classe che definisce la visualizzazione dei monitor nel lato amministrativo
+    """
+    list_display = ('monitor', 'agg')
+
 admin.site.register(MyUser, TuttiUtenti)
 admin.site.register(Notizia, TutteNotizie)
 admin.site.register(Comune, TuttiComuni)
 admin.site.register(Frazione, TutteFrazioni)
 admin.site.register(Monitor, TuttiMonitor)
 admin.site.register(VisualizzataComune, VisualizzatiTuttiMonitor)
+admin.site.register(MonitorUltimaConnessione,TutteCon)

@@ -58,6 +58,7 @@ def myindex(request, ok=None, errore=None):
     monitor = Monitor.objects.all()
     nmonitor = 0
     for x in monitor:
+        print (x.funziona())
         if not x.funziona():
             nmonitor += 1
     notizie = Notizia.objects.all()

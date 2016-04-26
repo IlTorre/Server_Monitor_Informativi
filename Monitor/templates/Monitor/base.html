@@ -3,6 +3,7 @@
 <head>
     {% load staticfiles %}
     {% load Monitor_extras %}
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Unione del Sorbara --- Gestione Pensiline informative</title>
@@ -72,20 +73,25 @@
                     <li>
                         <a  href="{% url 'Monitor:index' %}"><i class="fa fa-home "></i>Scrivania</a>
                     </li>
-                    {% if 'inserzionista' in request.user.groups.all %}
-                    <li>
-                         <a href="#"><i class="fa fa-desktop "></i>Nuova notizia<span class="fa arrow"></span></a>
-                         <ul class="nav nav-second-level">
-                            <li>
-                                <a href="{% url 'Monitor:inserimento_step1' %}"><i class="fa fa-toggle-on"></i>Per monitor</a>
-                            </li>
-                            <li>
-                                <a href=""><i class="fa fa-bell "></i>Per flusso tematico</a>
-                            </li>
+                    {% if request.user|has_group:"Inserzionista" %}
+                        <li>
+                             <a href="#"><i class="fa fa-desktop "></i>Nuova notizia<span class="fa arrow"></span></a>
+                             <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="{% url 'Monitor:inserimento_step1' %}"><i class="fa fa-toggle-on"></i>Per monitor</a>
+                                </li>
+                                <li>
+                                    <a href=""><i class="fa fa-bell "></i>Per flusso tematico</a>
+                                </li>
 
 
-                        </ul>
-                    </li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                    {% if request.user|has_group:"Revisore" %}
+                        <li>
+                            <a  href="{% url 'Monitor:notizie_da_approvare' %}"><i class="fa fa-clock-o "></i>Approva le notizie</a>
+                        </li>
                     {% endif %}
                     <li>
                          <a href="#"><i class="fa fa-bullhorn "></i>Riepilogo Notizie<span class="fa arrow"></span></a>

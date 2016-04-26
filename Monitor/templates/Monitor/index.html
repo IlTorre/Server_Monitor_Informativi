@@ -1,4 +1,5 @@
 {% extends 'Monitor/base.html' %}
+{% load Monitor_extras %}
 
 {% block body %}
 
@@ -45,12 +46,16 @@
                         {% else %}
                             <div class="main-box mb-red">
                         {% endif %}
-                                <a href="{% url 'Monitor:notizie_da_approvare' %}">
+                                {% if request.user|has_group:"Revisore" %}
+                                    <a href="{% url 'Monitor:notizie_da_approvare' %}">
+                                {% endif %}
                                     <i class="fa fa-warning fa-5x"></i>
                                     <h5>
                                         {{ notizie_non_approvate }} Notizie da approvare
                                     </h5>
-                                </a>
+                                {% if request.user|has_group:"Revisore" %}
+                                    </a>
+                                {% endif %}
                             </div>
                     </div>
                 </div>

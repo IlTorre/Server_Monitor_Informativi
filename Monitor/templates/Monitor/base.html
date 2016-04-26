@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     {% load staticfiles %}
+    {% load Monitor_extras %}
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Unione del Sorbara --- Gestione Pensiline informative</title>
@@ -52,7 +53,16 @@
                             <div class="inner-text">
                                 {{ request.user.first_name }} {{ request.user.last_name }}
                             <br />
-                                <small>Username: {{ request.user.username }} </small>
+                                <small>
+                                    Username: {{ request.user.username }} <br />
+                                    Ruolo:
+                                    {% if request.user|has_group:"Revisore" %}
+                                        Revisore
+                                        {% elif request.user|has_group:"Inserzionista" %}
+                                        Inserzionista
+                                    {% endif %}
+
+                                </small>
                             </div>
                         </div>
 
@@ -62,7 +72,7 @@
                     <li>
                         <a  href="{% url 'Monitor:index' %}"><i class="fa fa-home "></i>Scrivania</a>
                     </li>
-
+                    {% if 'inserzionista' in request.user.groups.all %}
                     <li>
                          <a href="#"><i class="fa fa-desktop "></i>Nuova notizia<span class="fa arrow"></span></a>
                          <ul class="nav nav-second-level">
@@ -76,7 +86,7 @@
 
                         </ul>
                     </li>
-
+                    {% endif %}
                     <li>
                          <a href="#"><i class="fa fa-bullhorn "></i>Riepilogo Notizie<span class="fa arrow"></span></a>
                          <ul class="nav nav-second-level">

@@ -1,4 +1,5 @@
 {% extends 'Monitor/base.html' %}
+{% load Monitor_extras %}
 
 {% block body %}
 
@@ -33,7 +34,11 @@
                     </thead>
                     <tbody>
                         {% for notizia in notizie %}
+                            {% if request.user|has_group:"Inserzionista" %}
                             <tr onclick = "location.href='{% url 'Monitor:modifica_notizia' notizia.id %}'">
+                            {% else %}
+                            <tr onclick = "location.href='{% url 'Monitor:approva_notizia' notizia.id %}'">
+                            {% endif %}
                                 <td># {{ notizia.id }}</td>
                                 <td>{{ notizia.titolo }}</td>
                                 <td>@{{ notizia.inserzionista }}</td>

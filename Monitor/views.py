@@ -357,23 +357,21 @@ def controlla_gruppo(group, user):
     return False
 
 
+@group_required('Revisore', login_url='/login')
 def approva_notizia(request, id_notizia):
     """
     Gestisce la viualizzazione della notizia e la sua attivazione.
     """
-    if controlla_gruppo('Revisore', request.user):
-        notizia = Notizia.objects.filter(pk=id_notizia).last()
-        if request.method == 'GET':
-            return render(request, 'Monitor/approva_notizie.html', {'notizia': notizia})
-        else:
-            if notizia:
-                notizia.approvata = True
-                notizia.save()
-                return myindex(request, ok='La notizia è ora stata attivata. A breve potrà comparire sui monitor.')
-            else:
-                return myindex(request, errore='La notizia non è stata trovata.')
+    notizia = Notizia.objects.filter(pk=id_notizia).last()
+    if request.method == 'GET':
+        return render(request, 'Monitor/approva_notizie.html', {'notizia': notizia})
     else:
-        return myindex(request, errore='Solo i revisori possono approvare le notizie')
+        if notizia:
+            notizia.approvata = not notizia.approvata
+            notizia.save()
+            return myindex(request, ok='Stato della notizia modificato')
+        else:
+            return myindex(request, errore='La notizia non è stata trovata.')
 
 
 def modifica_notizia(request, id_notizia):

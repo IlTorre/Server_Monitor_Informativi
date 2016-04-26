@@ -48,17 +48,18 @@
                         {% endif %}
                                 {% if request.user|has_group:"Revisore" %}
                                     <a href="{% url 'Monitor:notizie_da_approvare' %}">
+                                {% else %}
+                                    <a href="{% url 'Monitor:lista_non_attive' %}">
                                 {% endif %}
                                     <i class="fa fa-warning fa-5x"></i>
                                     <h5>
                                         {{ notizie_non_approvate }} Notizie da approvare
                                     </h5>
-                                {% if request.user|has_group:"Revisore" %}
                                     </a>
-                                {% endif %}
                             </div>
                     </div>
                 </div>
+                {% if request.user|has_group:"Inserzionista" %}
                 <div class="row">
                     <div class="col-md-12">
                         <h1 class="page-subhead-line">Le mie notizie:</h1>
@@ -94,6 +95,7 @@
                 </table>
             </div>
         {% endif %}
+                    {% endif %}
                 <!-- /. ROW  -->
              </div>
          </div>

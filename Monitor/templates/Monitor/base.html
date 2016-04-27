@@ -109,6 +109,11 @@
 
                         </ul>
                     </li>
+                    {% if request.user|is_admin %}
+                        <li>
+                             <a href="{% url 'admin:index' %}"><i class="fa fa-wrench"> </i>Amministrazione</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
 

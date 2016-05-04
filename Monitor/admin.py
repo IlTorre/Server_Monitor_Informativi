@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Comune, Frazione, Monitor, MyUser, VisualizzataComune, Notizia, MonitorUltimaConnessione
+from Server.settings import DEBUG
 
 # Register your models here.
 
@@ -11,6 +12,15 @@ class TuttiUtenti(admin.ModelAdmin):
     list_display = ('username', 'first_name', 'last_name')
     ordering = ['last_name', 'first_name']
 
+    fieldsets = [
+        ('Dati Anagrafici', {'fields': ['first_name','last_name']}),
+        ('Informazioni aggiuntive', {'fields': ['username','email','password']}),
+        ('Ruolo ricoperto', {'fields': ['groups',]}),
+    ]
+
+    class Meta:
+        verbose_name_plural = "Utenti"
+
 
 class TuttiComuni(admin.ModelAdmin):
     """
@@ -18,6 +28,9 @@ class TuttiComuni(admin.ModelAdmin):
     """
     list_display = ('nome',)
     ordering = ['nome']
+
+    class Meta:
+        verbose_name_plural = "Comuni"
 
 
 class TutteFrazioni(admin.ModelAdmin):
@@ -27,6 +40,9 @@ class TutteFrazioni(admin.ModelAdmin):
     list_display = ('nome', 'comune')
     ordering = ['comune', 'nome']
 
+    class Meta:
+        verbose_name_plural = "Frazioni"
+
 
 class TuttiMonitor(admin.ModelAdmin):
     """
@@ -34,6 +50,9 @@ class TuttiMonitor(admin.ModelAdmin):
     """
     list_display = ('nome', 'descrizione', 'via', 'frazione_posizionamento')
     ordering = ['frazione_posizionamento', 'via', 'nome']
+
+    class Meta:
+        verbose_name_plural = "Monitor"
 
 
 class VisualizzatiTuttiMonitor(admin.ModelAdmin):
@@ -59,9 +78,11 @@ class TutteCon(admin.ModelAdmin):
     list_display = ('monitor', 'agg')
 
 admin.site.register(MyUser, TuttiUtenti)
-admin.site.register(Notizia, TutteNotizie)
 admin.site.register(Comune, TuttiComuni)
 admin.site.register(Frazione, TutteFrazioni)
 admin.site.register(Monitor, TuttiMonitor)
-admin.site.register(VisualizzataComune, VisualizzatiTuttiMonitor)
-admin.site.register(MonitorUltimaConnessione,TutteCon)
+
+if DEBUG:
+    admin.site.register(Notizia, TutteNotizie)
+    admin.site.register(VisualizzataComune, VisualizzatiTuttiMonitor)
+    admin.site.register(MonitorUltimaConnessione, TutteCon)

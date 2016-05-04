@@ -22,4 +22,7 @@ urlpatterns = [
     url(r'^notizie/attive/$', views.lista_notizie_attive, name='lista_attive'),
     url(r'^notizie/non_attive/$', views.lista_notizie_da_approvare, name='lista_non_attive'),
     url(r'^notizie/scadute/$', views.lista_notizie_scadute, name='lista_scadute'),
+    url(r'^visualizza/monitor/$', views.lista_monitor, name='lista_monitor'),
+    url(r'^visualizza/monitor/(?P<monitor_id>[0-9]+)$', views.notizie_per_monitor, name='notizie_monitor'),
+
 ]

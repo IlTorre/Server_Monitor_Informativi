@@ -75,7 +75,7 @@
                     </li>
                     {% if request.user|has_group:"Inserzionista" %}
                         <li>
-                             <a href="#"><i class="fa fa-desktop "></i>Nuova notizia<span class="fa arrow"></span></a>
+                             <a href="#"><i class="fa fa-edit "></i>Nuova notizia<span class="fa arrow"></span></a>
                              <ul class="nav nav-second-level">
                                 <li>
                                     <a href="{% url 'Monitor:inserimento_step1' %}"><i class="fa fa-toggle-on"></i>Per monitor</a>
@@ -108,6 +108,9 @@
 
 
                         </ul>
+                    </li>
+                    <li>
+                        <a href="{% url 'Monitor:lista_monitor' %}"><i class="fa fa-desktop"> </i>Monitor</a>
                     </li>
                     {% if request.user|is_admin %}
                         <li>

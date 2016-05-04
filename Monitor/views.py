@@ -459,3 +459,26 @@ def lista_notizie_da_approvare(request):
 def lista_notizie_scadute(request):
     notizie = [notizia for notizia in Notizia.objects.all() if notizia.data_scadenza < timezone.now()]
     return render(request, 'Monitor/notizie_scadute.html', {'notizie': notizie})
+
+
+@login_required(login_url='/login')
+def lista_monitor(request):
+    """
+    Gestisce la visualizzazione dell'elenco dei monitor
+    :param request: la richiesta html
+    :return: il render del template corretto
+    """
+    monitor = Monitor.objects.all().order_by('frazione_posizionamento','via','nome')
+    return render(request,'Monitor/monitor.html',{'monitor':monitor})
+
+
+def notizie_per_monitor(request, monitor_id):
+    monitor = get_object_or_404(Monitor, pk=monitor_id)
+
+    notizie = [x.notizia for x in VisualizzataComune.objects.filter(comune=monitor.frazione_posizionamento.comune)]
+    notizie += [x.notizia for x in VisualizzataFrazione.objects.filter(frazione=monitor.frazione_posizionamento)]
+    notizie += [x.notizia for x in VisualizzataMonitor.objects.filter(monitor=monitor)]
+    sorted(notizie, key=lambda notizia: notizia.data_scadenza)
+
+    return render(request,'Monitor/notizie_per_monitor.html',{'monitor_id':monitor_id, 'notizie':notizie})
+

@@ -133,6 +133,11 @@ def nuova_notizia_3(request):
             for id_com in comuni_sel:
                 comuni.append(Comune.objects.filter(pk=id_com).last())
             request.session['comuni_id'] = comuni_sel
+            try:
+                del request.session['frazioni_id']
+                del request.session['monitor_id']
+            except KeyError:
+                pass
             return render(request, 'Monitor/inserimento3.html', {'comuni_selezionati': comuni})
         else:
             return myindex(
@@ -178,6 +183,10 @@ def nuova_notizia_5(request):
             for id_fraz in frazioni_sel:
                 frazioni.append(Frazione.objects.filter(pk=id_fraz).last())
             request.session['frazioni_id'] = frazioni_sel
+            try:
+                del request.session['monitor_id']
+            except KeyError:
+                pass
             return render(request, 'Monitor/inserimento5.html', {'frazioni_selezionate': frazioni})
         else:
             return myindex(

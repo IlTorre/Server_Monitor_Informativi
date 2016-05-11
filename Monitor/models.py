@@ -105,13 +105,16 @@ class Notizia(models.Model):
     """
     titolo = models.CharField(max_length=settings.MAX_LUN_TITOLO)
     descrizione = models.TextField(max_length=settings.MAX_LUN_DESCRIZIONE)
-    immagine = models.ImageField(upload_to=get_nome_immagine_notizia, default=None)
+    immagine = models.ImageField(upload_to=get_nome_immagine_notizia, default=None, blank=True)
     approvata = models.BooleanField(default=False)
     inserzionista = models.ForeignKey(MyUser)
     data_inserimento = models.DateTimeField(default=timezone.now)
     data_scadenza = models.DateTimeField(default=timezone.now()+datetime.timedelta(days=15))
 
     def __unicode__(self):
+        return self.titolo
+
+    def __str__(self):
         return self.titolo
 
     def attiva(self):

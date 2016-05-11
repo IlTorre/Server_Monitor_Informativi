@@ -13,12 +13,13 @@ class TuttiUtenti(admin.ModelAdmin):
     ordering = ['last_name', 'first_name']
 
     fieldsets = [
-        ('Dati Anagrafici', {'fields': ['first_name','last_name']}),
-        ('Informazioni aggiuntive', {'fields': ['username','email','password']}),
-        ('Ruolo ricoperto', {'fields': ['groups',]}),
+        ('Dati Anagrafici', {'fields': ['first_name', 'last_name']}),
+        ('Informazioni aggiuntive', {'fields': ['username', 'email', 'password']}),
+        ('Ruolo ricoperto', {'fields': ['groups', ]}),
     ]
 
     class Meta:
+        verbose_name = "Utente"
         verbose_name_plural = "Utenti"
 
 
@@ -30,6 +31,7 @@ class TuttiComuni(admin.ModelAdmin):
     ordering = ['nome']
 
     class Meta:
+        verbose_name = "Comune"
         verbose_name_plural = "Comuni"
 
 
@@ -41,6 +43,7 @@ class TutteFrazioni(admin.ModelAdmin):
     ordering = ['comune', 'nome']
 
     class Meta:
+        verbose_name = "Frazione"
         verbose_name_plural = "Frazioni"
 
 
@@ -52,23 +55,32 @@ class TuttiMonitor(admin.ModelAdmin):
     ordering = ['frazione_posizionamento', 'via', 'nome']
 
     class Meta:
+        verbose_name = "Monitor"
         verbose_name_plural = "Monitor"
 
 
 class VisualizzatiTuttiMonitor(admin.ModelAdmin):
     """
-    Classe che definisce la visualizzazione dei monitor nel lato amministrativo
+    Classe che definisce la visualizzazione delle notizie isualizzate su un intero comune nel lato amministrativo
     """
     list_display = ('comune', 'notizia')
-    ordering = ['comune']
+    ordering = ['notizia', 'comune']
+
+    class Meta:
+        verbose_name = "Notizia visualizzata su un intero comune"
+        verbose_name_plural = "Notizie visualizzate su un intero comune"
 
 
 class TutteNotizie(admin.ModelAdmin):
     """
-    Classe che definisce la visualizzazione dei monitor nel lato amministrativo
+    Classe che definisce la visualizzazione delle notizie nel lato amministrativo
     """
     list_display = ('titolo', 'attiva')
     ordering = ['titolo']
+
+    class Meta:
+        verbose_name = "Notizia"
+        verbose_name_plural = "Notizie"
 
 
 class TutteCon(admin.ModelAdmin):

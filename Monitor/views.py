@@ -3,11 +3,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import HttpResponseRedirect, HttpResponse, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from Monitor.decorators import controlla_gruppo
 from .forms import *
 import datetime
-from .models import VisualizzataComune, VisualizzataFrazione, VisualizzataMonitor, MonitorUltimaConnessione
+from .models import VisualizzataComune, VisualizzataFrazione, VisualizzataMonitor, MonitorUltimaConnessione, MyUser
 from Server.settings import TEMPO_ALLERTA
-from django.utils import six, timezone
+from django.utils import timezone
 import json
 from .decorators import group_required
 
@@ -319,6 +322,21 @@ def finalizza_notizia(request):
                 for comune in comuni:
                     VisualizzataComune(comune=comune, notizia=notizia).save()
 
+            #invio mail di notifica
+            oggetto = "Nuova notizia che richiede approvazione"
+            utenti = [utente for utente in MyUser.objects.all() if utente.notifiche_inserzioni_attive()]
+            print(utenti)
+            for utente in utenti:
+                to = utente.email
+                content = {'user': utente.username, 'notizia': notizia}
+
+                html_content = render_to_string('Monitor/email/email.html', content)
+                text_content = render_to_string('Monitor/email/email.txt', content)
+
+                msg = EmailMultiAlternatives(oggetto, text_content, 'noreply.asteonline@gmail.com', [to])
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
+
             return myindex(request, ok="Notizia inserita correttamente")
         else:
             return render(request,
@@ -345,25 +363,6 @@ def notizie_da_approvare(request):
     """
     notizie = Notizia.objects.filter(approvata=False)
     return render(request, 'Monitor/notizie_da_approvare.html', {'notizie': notizie})
-
-
-def controlla_gruppo(group, user):
-    """
-    Funzione per il controllo di appartenenza a un gruppo.
-    :param group: il nome del gruppo
-    :param user: l'utente da controllare
-    :return: True se appartiene al gruppo, False altrimenti
-    """
-    if isinstance(group, six.string_types):
-        groups = (group,)
-    else:
-        groups = group
-    # First check if the user has the permission (even anon users)
-
-    if user.groups.filter(name__in=groups).exists():
-        return True
-    # As the last resort, show the login form
-    return False
 
 
 @group_required('Revisore', login_url='/login')

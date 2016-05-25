@@ -4,6 +4,7 @@ import datetime
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from Monitor.decorators import controlla_gruppo
 
 
 def get_nome_immagine_utente(istanza, file):
@@ -29,6 +30,14 @@ class MyUser(AbstractUser):
     Classe che estende la classe user di django per aggiungere campi personalizzati
     """
     foto_profilo = models.ImageField(upload_to=get_nome_immagine_utente, default=settings.NO_PROFILO)
+    notifiche = models.BooleanField(default=True)
+
+    def notifiche_inserzioni_attive(self):
+        """
+        ritorna se un utente riceve le notifiche
+        :return: True o False a seconda se riceve le notifiche
+        """
+        return self.notifiche and self.email != '' and controlla_gruppo('Revisore',self) == True
 
 
 class Comune(models.Model):

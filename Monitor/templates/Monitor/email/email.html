@@ -1,0 +1,15 @@
+<strong>Ciao {{ user }},</strong>
+<p>
+    Ti informo che è appena stata publicata una notizia che richiede l'approvazione,
+    di seguito trovi tutte le informazioni necessarie.
+</p>
+<strong>Notizia:</strong>
+<p>
+    <strong>Titolo:</strong> {{ notizia.titolo }} </br>
+    <strong>Descrizione:</strong> {{ notizia.descrizione }} </br>
+    {% if notizia.immagine %}
+        <strong>Immagine:</strong> <img src="http://127.0.0.1{{ notizia.immagine.url }}"> </br>
+    {% endif %}
+</p>
+
+Per approvarla clicca <a href="{% url 'Monitor:approva_notizia' notizia.id %}">QUI</a>

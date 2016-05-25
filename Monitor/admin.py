@@ -15,6 +15,7 @@ class TuttiUtenti(admin.ModelAdmin):
     fieldsets = [
         ('Dati Anagrafici', {'fields': ['first_name', 'last_name']}),
         ('Informazioni aggiuntive', {'fields': ['username', 'email', 'password']}),
+        ('Notifiche di sistema', {'fields': ['notifiche', ]}),
         ('Ruolo ricoperto', {'fields': ['groups', ]}),
     ]
 

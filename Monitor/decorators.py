@@ -3,6 +3,25 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
 
 
+def controlla_gruppo(group, user):
+    """
+    Funzione per il controllo di appartenenza a un gruppo.
+    :param group: il nome del gruppo
+    :param user: l'utente da controllare
+    :return: True se appartiene al gruppo, False altrimenti
+    """
+    if isinstance(group, six.string_types):
+        groups = (group,)
+    else:
+        groups = group
+    # First check if the user has the permission (even anon users)
+
+    if user.groups.filter(name__in=groups).exists():
+        return True
+    # As the last resort, show the login form
+    return False
+
+
 def group_required(group, login_url=None, raise_exception=False):
     """
     Decorator per views che controlla se un user appartiene a un gruppo.
